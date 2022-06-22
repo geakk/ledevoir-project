@@ -1,0 +1,245 @@
+<main [ngClass]="themeService.currentTheme!.cssSelector">
+  <div *ngIf="isLoading" class="loading-view mat-drawer-container">
+    <div class="loading-view-logos">
+      <svg class="svg-logo">
+        <use xlink:href="assets/symbols.svg#videns"></use>
+      </svg>
+      <svg class="svg-logo">
+        <use xlink:href="assets/symbols.svg#school"></use>
+      </svg>
+    </div>
+    <div class="loading-view-progress-bar">
+      <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+      <p class="loading-view-progress-bar-helptext">
+        Loading data. Please wait ...
+      </p>
+    </div>
+  </div>
+  <mat-drawer-container *ngIf="!isLoading" [hasBackdrop]="false" [@.disabled]="false">
+    <mat-drawer #drawer mode="side" [opened]="true" position="end">
+      <perfect-scrollbar>
+        <div class="filters">
+          <div class="filters-title">
+            <h2 id="introjs-filters">Filtres</h2>
+            <button
+              mat-icon-button
+              color="primary"
+              matTooltip="Réinitialiser les filters"
+              aria-label="Réinitialiser les filters"
+              (click)="resetFilters()"
+              id="introjs-filters-reset"
+            >
+              <mat-icon>restart_alt</mat-icon>
+            </button>
+          </div>
+          <mat-accordion multi>
+            <mat-expansion-panel
+              *ngFor="let filterableAttribute of filterableAttributes"
+              [expanded]="filterableAttribute.expanded"
+              (closed)="
+                filterableAttribute.expanded = false; cdr.detectChanges()
+              "
+              (opened)="
+                filterableAttribute.expanded = true; cdr.detectChanges()
+              "
+            >
+              <mat-expansion-panel-header>
+                <mat-panel-title>{{
+                  filterableAttribute.name
+                }}</mat-panel-title>
+              </mat-expansion-panel-header>
+              <mat-form-field
+                appearance="standard"
+                *ngIf="filterableAttribute.useAutocomplete"
+              >
+                <mat-chip-list #chipList aria-label="Sélection d'étudiants">
+                  <mat-chip
+                    *ngFor="
+                      let option of filterableAttribute.allSelected
+                        ? []
+                        : onlySelected(filterableAttribute.options)
+                    "
+                    (removed)="onRemoveChip(filterableAttribute, option)"
+                  >
+                    {{ option.label }}
+                    <button matChipRemove>
+                      <mat-icon>cancel</mat-icon>
+                    </button>
+                  </mat-chip>
+                  <input
+                    placeholder="Filtrer"
+                    #studentInput
+                    [matAutocomplete]="auto"
+                    [matChipInputFor]="chipList"
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    [(ngModel)]="filterableAttribute.filter"
+                    (ngModelChange)="
+                      onFilterInputChange(filterableAttribute);
+                      cdr.detectChanges()
+                    "
+                  />
+                </mat-chip-list>
+                <mat-autocomplete
+                  #auto="matAutocomplete"
+                  (optionSelected)="onClickOnOption(filterableAttribute, $event.option.value);studentInput.value = ''"
+                >
+                  <mat-option
+                    *ngFor="
+                      let option of filterableAttribute.filteredOptions.slice(
+                        0,
+                        5
+                      )
+                    "
+                    [value]="option.label"
+                    [matTooltip]="option.label"
+                  >
+                    <small>{{ option.label }}</small>
+                  </mat-option>
+                </mat-autocomplete>
+              </mat-form-field>
+              <div class="option" *ngIf="!filterableAttribute.useAutocomplete">
+                <div class="option-left">
+                  <mat-checkbox
+                    [checked]="filterableAttribute.allSelected"
+                    [indeterminate]="
+                      !filterableAttribute.allSelected &&
+                      filterableAttribute.someSelected
+                    "
+                    (change)="onSetAll(filterableAttribute, $event.checked)"
+                  ></mat-checkbox>
+                </div>
+                <div class="option-right">
+                  <mat-form-field appearance="standard">
+                    <input
+                      matInput
+                      type="text"
+                      placeholder="Filtrer"
+                      [(ngModel)]="filterableAttribute.filter"
+                      (ngModelChange)="onFilterInputChange(filterableAttribute)"
+                    />
+                    <button
+                      matSuffix
+                      mat-icon-button
+                      aria-label="Effacer"
+                      *ngIf="filterableAttribute.filter"
+                      (click)="filterableAttribute.filter = ''"
+                    >
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+              </div>
+              <mat-error
+                *ngIf="
+                  filterableAttribute.filter &&
+                  filterableAttribute.filteredOptions.length === 0
+                "
+                >Pas de résultat</mat-error
+              >
+              <ng-template [ngIf]="!filterableAttribute.useAutocomplete">
+                <div
+                  class="options"
+                  *ngFor="
+                    let option of filterableAttribute.filter
+                      ? filterableAttribute.filteredOptions
+                      : filterableAttribute.options
+                  "
+                >
+                  <div class="option">
+                    <div class="option-left">
+                      <mat-checkbox
+                        [checked]="option.selected"
+                        (change)="
+                          onSet(filterableAttribute, option, $event.checked)
+                        "
+                        class="mat-checkbox-option"
+                      ></mat-checkbox>
+                    </div>
+                    <div class="option-right">{{ option.label }}</div>
+                  </div>
+                </div>
+              </ng-template>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </div>
+      </perfect-scrollbar>
+    </mat-drawer>
+
+    <mat-drawer-content>
+      <perfect-scrollbar>
+        <div class="navbar mat-elevation-z2">
+          <mat-toolbar color="primary">
+            <span>Réussito | {{ schoolName }}</span>
+            <div class="flex-spacer"></div>
+            <button
+              mat-icon-button
+              aria-label="Visite guidée"
+              matTooltip="Visite guidée"
+              (click)="onStartTour()"
+            >
+              <mat-icon>help_outline</mat-icon>
+            </button>
+            <button
+              mat-icon-button
+              [mat-menu-trigger-for]="themeMenu"
+              aria-label="Choisir un thème"
+              matTooltip="Choisir un thème"
+              id="introjs-change-theme"
+            >
+              <mat-icon>format_color_fill</mat-icon>
+            </button>
+            <mat-menu
+              #themeMenu="matMenu"
+              xPosition="before"
+              class="theme-picker-menu"
+            >
+              <button
+                mat-menu-item
+                class="mat-menu-item"
+                *ngFor="let theme of themeService.themes"
+                (click)="themeService.selectTheme(theme.name)"
+              >
+                <mat-icon
+                  [ngClass]="{
+                    'theme-selected-icon': themeService.currentTheme === theme
+                  }"
+                  [color]="
+                    themeService.currentTheme === theme ? 'accent' : undefined
+                  "
+                >
+                  {{
+                    themeService.currentTheme === theme
+                      ? "radio_button_checked"
+                      : "radio_button_unchecked"
+                  }}
+                </mat-icon>
+                <span>{{ theme.displayName }}</span>
+                <mat-icon
+                  [class]="'theme-example-icon ' + theme.name"
+                  svgIcon="theme-example"
+                ></mat-icon>
+              </button>
+            </mat-menu>
+            <button
+              mat-icon-button
+              aria-label="Changer les filtres"
+              matTooltip="Changer les filtres"
+              (click)="drawer.toggle()"
+              id="introjs-open-close-filters"
+            >
+              <mat-icon>filter_list</mat-icon>
+            </button>
+          </mat-toolbar>
+        </div>
+
+        <div class="visualisations">
+          <app-dashboard [data]="filteredData"></app-dashboard>
+        </div>
+
+        <mat-toolbar class="footer" color="primary">
+          <small>© Videns Analytics Inc. Tous droits réservés.</small>
+        </mat-toolbar>
+      </perfect-scrollbar>
+    </mat-drawer-content>
+  </mat-drawer-container>
+</main>

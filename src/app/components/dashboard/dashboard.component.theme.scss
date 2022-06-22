@@ -1,0 +1,26 @@
+@use 'sass:map';
+@use '~@angular/material'as mat;
+@use 'sass:color';
+
+
+@mixin theme($theme) {
+
+  $primary: map.get($theme, primary);
+  $foreground: map.get($theme, foreground);
+
+  app-dashboard .big-text {
+    color: mat.get-color-from-palette($primary, default);
+
+    // &.is-active,
+    // &.is-active:focus {
+    //   background: rgba(mat.get-color-from-palette($primary, default), 0.20) !important;
+    // }
+
+    // &.is-active:hover,
+    // &:hover,
+    // &:focus {
+    //   background: rgba(mat.get-color-from-palette($primary, default), 0.3) !important;
+    // }
+  }
+
+}
