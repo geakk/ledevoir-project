@@ -1,41 +1,22 @@
 <main [ngClass]="themeService.currentTheme!.cssSelector">
-  <div *ngIf="isLoading" class="loading-view mat-drawer-container">
-    <div class="loading-view-progress-bar">
-      <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
-      <p class="loading-view-progress-bar-helptext">
-        Loading data. Please wait ...
-      </p>
+    <div *ngIf="isLoading" class="loading-view mat-drawer-container">
+        <div class="loading-view-progress-bar">
+            <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+            <p class="loading-view-progress-bar-helptext">
+                Loading data. Please wait ...
+            </p>
+        </div>
     </div>
-  </div>
-  <mat-drawer-container
-    *ngIf="!isLoading"
-    [hasBackdrop]="false"
-    [@.disabled]="false"
-  >
-    <div class="navbar mat-elevation-z2">
-      <mat-toolbar color="primary">
-        <span>Le devoir lors de la Covid-19</span>
-        <div class="flex-spacer"></div>
-        <button
-          mat-icon-button
-          [mat-menu-trigger-for]="themeMenu"
-          aria-label="Choisir un thème"
-          matTooltip="Choisir un thème"
-          id="introjs-change-theme"
-        >
+    <mat-drawer-container *ngIf="!isLoading" [hasBackdrop]="false" [@.disabled]="false">
+        <div class="navbar mat-elevation-z2">
+            <mat-toolbar color="primary">
+                <span>Le devoir lors de la Covid-19</span>
+                <div class="flex-spacer"></div>
+                <button mat-icon-button [mat-menu-trigger-for]="themeMenu" aria-label="Choisir un thème" matTooltip="Choisir un thème" id="introjs-change-theme">
           <mat-icon>format_color_fill</mat-icon>
         </button>
-        <mat-menu
-          #themeMenu="matMenu"
-          xPosition="before"
-          class="theme-picker-menu"
-        >
-          <button
-            mat-menu-item
-            class="mat-menu-item"
-            *ngFor="let theme of themeService.themes"
-            (click)="themeService.selectTheme(theme.name)"
-          >
+                <mat-menu #themeMenu="matMenu" xPosition="before" class="theme-picker-menu">
+                    <button mat-menu-item class="mat-menu-item" *ngFor="let theme of themeService.themes" (click)="themeService.selectTheme(theme.name)">
             <mat-icon
               [ngClass]="{
                 'theme-selected-icon': themeService.currentTheme === theme
@@ -56,12 +37,12 @@
               svgIcon="theme-example"
             ></mat-icon>
           </button>
-        </mat-menu>
-      </mat-toolbar>
-    </div>
+                </mat-menu>
+            </mat-toolbar>
+        </div>
 
-    <div class="visualisations">
-      <app-dashboard [data]="filteredData"></app-dashboard>
-    </div>
-  </mat-drawer-container>
+        <div class="visualisations">
+            <app-dashboard></app-dashboard>
+        </div>
+    </mat-drawer-container>
 </main>

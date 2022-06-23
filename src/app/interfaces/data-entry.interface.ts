@@ -1,22 +1,28 @@
 export interface CsvDataEntry {
-  level: string;
-  class: string;
-  course: string;
-  commentId: string;
-  comment: string;
-  stake: string;
-  permanentCode: string;
-  studentName: string;
-  overallAverage: number;
-  mark: number;
+  count: number;
+  count2: number;
+  uri: string;
+  lang: string;
+  isDuplicate: string;
+  date: string;
+  time: string;
+  dateTime: string;
+  dateTimePub: string;
+  dataType: string;
+  sim: string;
+  url: string;
+  title: string;
+  body: string;
+  source: object;
+  authors: object;
+  concepts: object;
+  categories: object;
+  image: string;
+  eventUri: string;
+  location: string;
   sentiment: string;
-  overallMarkAverage: number;
-  overallLevelAverage: number;
+  wgt: number
+  relevance: number;
+  unnamed: string;
 }
 
-export interface RawDataEntry extends CsvDataEntry {
-  overallStudentPosSentPercAvg: number;
-  overallCoursePosSentPercAvg: number;
-  overallLevelPosSentPercAvg: number;
-  overallStakePosSentPercAvg: number;
-}

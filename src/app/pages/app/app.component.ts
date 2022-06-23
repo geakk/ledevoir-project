@@ -3,7 +3,6 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { MatDrawer } from '@angular/material/sidenav';
 import { DomSanitizer } from '@angular/platform-browser';
-import { RawDataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
 import { FilterEventsService } from 'src/app/services/filter-events.service';
 import { ThemeService } from 'src/app/services/theme.service';
@@ -38,44 +37,9 @@ export class AppComponent implements OnInit {
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
-  readonly filterableColumns = [
-    {
-      label: 'Niveau',
-      accessor: (row: RawDataEntry) => row.level,
-      key: 'level',
-    },
-    {
-      label: 'Foyer',
-      accessor: (row: RawDataEntry) => row.class,
-      key: 'class',
-    },
-    {
-      label: 'Matière',
-      accessor: (row: RawDataEntry) => row.course,
-      key: 'course',
-    },
-    {
-      label: 'Enjeu',
-      accessor: (row: RawDataEntry) => row.stake,
-      key: 'stake',
-    },
-    {
-      label: 'Sentiment',
-      accessor: (row: RawDataEntry) => row.sentiment,
-      key: 'sentiment',
-    },
-    {
-      label: 'Étudiant',
-      accessor: (row: RawDataEntry) =>
-        `${row.studentName} (${row.permanentCode})`,
-      key: 'studentName',
-    },
-  ];
+  
 
   filterableAttributes: FilterableAttribute[] = [];
-
-  filteredData: RawDataEntry[] = [];
-
   constructor(
     // eslint-disable-next-line no-unused-vars
     private readonly dataService: DataService,
@@ -111,35 +75,10 @@ export class AppComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     await this.dataService.loadData();
     this.schoolName = this.dataService.schoolName;
-    this.filterableAttributes = this.getAllFilterableAttributes();
-    this.filter();
     this.isLoading = false;
   }
 
-  private getAllFilterableAttributes(): FilterableAttribute[] {
-    const filterableAttributes: FilterableAttribute[] = [];
-    for (const filterableColumn of this.filterableColumns) {
-      const options = new Set<string>();
-      for (const row of this.dataService.rawData) {
-        options.add(filterableColumn.accessor(row));
-      }
-      const filterableAttribute: FilterableAttribute = {
-        name: filterableColumn.label,
-        options: Array.from(options)
-          .sort()
-          .map((o) => ({ label: o, selected: true })),
-        allSelected: true,
-        someSelected: true,
-        filter: '',
-        filteredOptions: [],
-        useAutocomplete: filterableColumn.label === 'Étudiant',
-        key: filterableColumn.key,
-        expanded: true,
-      };
-      filterableAttributes.push(filterableAttribute);
-    }
-    return filterableAttributes;
-  }
+ 
 
   onSetAll(filterableAttribute: FilterableAttribute, checked: boolean): void {
     const levelAndClassAttributes = this.filterableAttributes.filter((a) =>
@@ -161,7 +100,6 @@ export class AppComponent implements OnInit {
     for (const option of filterableAttribute.options) {
       option.selected = checked;
     }
-    this.filter();
   }
 
   onSet(
@@ -196,7 +134,6 @@ export class AppComponent implements OnInit {
     } else {
       this.setAttributeGlobalVariables(filterableAttribute);
     }
-    this.filter();
   }
 
   private setAttributeGlobalVariables(attribute: FilterableAttribute): void {
@@ -205,35 +142,4 @@ export class AppComponent implements OnInit {
       attribute.allSelected || attribute.options.some((o) => o.selected);
   }
 
-  private filter(): void {
-    const filteredData: RawDataEntry[] = [];
-    const filters = this.filterableColumns.map((f) => {
-      return {
-        ...f,
-        values: new Set(
-          this.filterableAttributes
-            .find((a) => a.name === f.label)
-            ?.options.filter((o) => o.selected === true)
-            .map((o) => o.label)
-        ),
-      };
-    });
-    for (const row of this.dataService.rawData) {
-      let shouldKeepRow = true;
-      for (const filter of filters) {
-        const value = filter.accessor(row);
-        if (!filter.values.has(value)) {
-          shouldKeepRow = false;
-          break;
-        }
-      }
-      if (shouldKeepRow) {
-        filteredData.push(row);
-      }
-    }
-    if (JSON.stringify(this.filteredData) !== JSON.stringify(filteredData)) {
-      this.filteredData = this.dataService.computeStakesAvgs(filteredData);
-    }
-    this.cdr.detectChanges();
-  }
 }
