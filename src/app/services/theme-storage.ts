@@ -5,7 +5,7 @@ import { Theme } from '../interfaces/theme';
   providedIn: 'root',
 })
 export class ThemeStorage {
-  static storageKey = 'reussito-theme-storage-current-name';
+  static storageKey = 'ledevoir-theme';
 
   storeTheme(theme: Theme) {
     try {

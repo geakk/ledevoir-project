@@ -1,4 +1,3 @@
-import * as d3 from 'd3';
 import {
   AfterViewInit,
   Component,
@@ -8,12 +7,13 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
+import * as d3 from 'd3';
+import { RawDataEntry } from 'src/app/interfaces/data-entry.interface';
 import {
   MinMax,
   ViewStudentData,
 } from 'src/app/interfaces/general-view.interface';
 import { FilterEventsService } from 'src/app/services/filter-events.service';
-import { RawDataEntry } from 'src/app/interfaces/data-entry.interface';
 import { ThemeService } from 'src/app/services/theme.service';
 
 // This visualisation is based on : https://codepen.io/borntofrappe/pen/QXNvjx
@@ -143,38 +143,6 @@ export class GeneralViewComponent implements OnChanges, AfterViewInit {
         this.theme.currentTheme!.primary as any,
         this.theme.currentTheme!.accent as any,
       ]);
-
-    // const students = new Map<
-    //   string,
-    //   {
-    //     marks: { [course: string]: number };
-    //     comments: { [course: string]: number };
-    //   }
-    // >();
-    // for (const row of data) {
-    //   if (isNaN(row.mark)) {
-    //     continue;
-    //   }
-    //   if (students.has(row.permanentCode)) {
-    //     students.get(row.permanentCode)![row.course] = row.mark;
-    //   } else {
-    //     students.set(row.permanentCode, { [row.course]: row.mark });
-    //   }
-    // }
-    // this.nStudents = students.size;
-    // if (students.size === 0) {
-    //   this.overallAverage = 0;
-    //   return;
-    // }
-    // let sum = 0;
-    // students.forEach((marks) => {
-    //   let studentSum = 0;
-    //   for (const course in marks) {
-    //     studentSum += marks[course];
-    //   }
-    //   sum += studentSum / Object.keys(marks).length;
-    // });
-    // this.overallAverage = sum / students.size;
 
     const studentMap: Map<String, ViewStudentData> = new Map();
     for (const row of data) {

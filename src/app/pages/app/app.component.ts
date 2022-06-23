@@ -1,15 +1,12 @@
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
 import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
-import { DataService } from 'src/app/services/data.service';
-import { DomSanitizer } from '@angular/platform-browser';
-import { FilterEventsService } from 'src/app/services/filter-events.service';
-import { IntroJs } from 'intro.js';
-import { MatDrawer } from '@angular/material/sidenav';
 import { MatIconRegistry } from '@angular/material/icon';
+import { MatDrawer } from '@angular/material/sidenav';
+import { DomSanitizer } from '@angular/platform-browser';
 import { RawDataEntry } from 'src/app/interfaces/data-entry.interface';
+import { DataService } from 'src/app/services/data.service';
+import { FilterEventsService } from 'src/app/services/filter-events.service';
 import { ThemeService } from 'src/app/services/theme.service';
-
-declare var introJs: any;
 
 interface Option {
   label: string;
@@ -28,7 +25,6 @@ interface FilterableAttribute {
   expanded: boolean;
 }
 
-const TOUR_KEY = 'reussito-visited-guide';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -118,16 +114,6 @@ export class AppComponent implements OnInit {
     this.filterableAttributes = this.getAllFilterableAttributes();
     this.filter();
     this.isLoading = false;
-    this.filterEventService.dataFilter$.subscribe((d) => {
-      this.applyFilters(d);
-    });
-    const alreadyDoneTour = localStorage.getItem(TOUR_KEY) === 'true';
-    setTimeout(async () => {
-      if (!alreadyDoneTour) {
-        await this.onStartTour();
-      }
-      window.localStorage[TOUR_KEY] = 'true';
-    }, 2000);
   }
 
   private getAllFilterableAttributes(): FilterableAttribute[] {
@@ -153,15 +139,6 @@ export class AppComponent implements OnInit {
       filterableAttributes.push(filterableAttribute);
     }
     return filterableAttributes;
-  }
-
-  onFilterInputChange(filterableAttribute: FilterableAttribute): void {
-    filterableAttribute.filteredOptions = filterableAttribute.options.filter(
-      (o) =>
-        o.label
-          .toLowerCase()
-          .includes(filterableAttribute.filter.trim().toLowerCase())
-    );
   }
 
   onSetAll(filterableAttribute: FilterableAttribute, checked: boolean): void {
@@ -258,178 +235,5 @@ export class AppComponent implements OnInit {
       this.filteredData = this.dataService.computeStakesAvgs(filteredData);
     }
     this.cdr.detectChanges();
-  }
-
-  onlySelected(options: Option[]): Option[] {
-    return options.filter((o) => o.selected);
-  }
-
-  onClickOnOption(
-    filterableAttribute: FilterableAttribute,
-    optionLabel: string
-  ): void {
-    if (filterableAttribute.allSelected) {
-      for (const option of filterableAttribute.options) {
-        option.selected = false;
-      }
-    }
-    filterableAttribute.allSelected = false;
-    const option = filterableAttribute.options.find(
-      (o) => o.label === optionLabel
-    );
-    option!.selected = true;
-    this.filter();
-  }
-
-  onRemoveChip(filterableAttribute: FilterableAttribute, option: Option): void {
-    option.selected = false;
-    filterableAttribute.someSelected = filterableAttribute.options.some(
-      (o) => o.selected
-    );
-    if (!filterableAttribute.someSelected) {
-      filterableAttribute.someSelected = true;
-      filterableAttribute.allSelected = true;
-      for (const option of filterableAttribute.options) {
-        option.selected = true;
-      }
-    }
-    this.filter();
-  }
-
-  private applyFilters(data: Partial<RawDataEntry>): void {
-    this.filterableAttributes = this.filterableAttributes.map(
-      (filterableAttribute) => {
-        if (!(filterableAttribute.key in data)) {
-          return {
-            ...filterableAttribute,
-            expanded: !filterableAttribute.allSelected,
-          };
-        }
-        const filterableAttributeModified = { ...filterableAttribute };
-        filterableAttributeModified.allSelected = false;
-        filterableAttributeModified.someSelected = true;
-        filterableAttributeModified.expanded = true;
-        filterableAttributeModified.options =
-          filterableAttributeModified.options.map((option) => {
-            return {
-              ...option,
-              selected:
-                option.label ===
-                data[filterableAttribute.key as keyof RawDataEntry],
-            };
-          });
-        this.onFilterInputChange(filterableAttributeModified);
-        return filterableAttributeModified;
-      }
-    );
-    this.filter();
-    this.cdr.detectChanges();
-  }
-
-  resetFilters(): void {
-    this.filterableAttributes = this.getAllFilterableAttributes();
-    this.filter();
-  }
-
-  async onStartTour(): Promise<void> {
-    if (!this.drawer!.opened) {
-      await this.drawer!.open();
-    }
-    this.startTour();
-  }
-
-  private startTour(): void {
-    this.filterableAttributes[0].expanded = true;
-    const intro: IntroJs = introJs();
-    intro.setOptions({
-      steps: [
-        {
-          element: '#introjs-change-theme',
-          intro: `Ce panneau permet de choisir le thème des couleurs général appliqué à l'application. Ce thème est adapté aux coleurs des graphiques, et des sections.`,
-          position: 'auto',
-          title: 'Thème',
-        },
-        {
-          element: '#introjs-open-close-filters',
-          intro: `Ce panneau contient tous les filtres applicables à l'application. Les graphiques sont automatiques adaptés aux entrées des filtres. Une fois que les filtres changent, le contenu des graphiques est modifié.`,
-          position: 'auto',
-          title: 'Panneau latéral des filtres',
-        },
-        {
-          element: '#introjs-filters-reset',
-          intro: `Ce bouton permet de rénitialiser les filtres. Les filtres se retrouvent dans leur état par défaut comme à l'ouverture de l'application.`,
-          position: 'auto',
-          title: 'Réinitialisation des filtres',
-        },
-        {
-          element: 'mat-checkbox.mat-checkbox-option',
-          intro: `Les cases à cocher suivantes permmettent de sélectionner les sections dont on apercevoir les statistiques. Les graphiques sont modifiés en conséquences.`,
-          position: 'auto',
-          title: 'Choix de section',
-        },
-        {
-          element: '#introjs-average',
-          intro: `Dans cette section se trouve la moyenne générale associée aux <b>étudiants</b>, aux <b>matières</b>, aux <b>sections</b> aux <b>enjeux</b>, aux <b>foyers</b> et aux <b>sentiments</b> choisis.`,
-          position: 'auto',
-          title: 'Moyenne générale',
-        },
-        {
-          element: '#introjs-average-comments-summary',
-          intro: `C'est le ration de commentaires positifs et négatifs associés aux filtres appliqués. Une fois que les filtres changent, le contenu du graphique est modifié. `,
-          position: 'auto',
-          title: 'Commentaires',
-        },
-        {
-          element: '#introjs-main-visualisation .quadrants',
-          intro: `Dans cette vue se trouvent les <b>étudiants concernés</b> par les <b>filtres appliqués</b>. Chaque point représente un étudiant. La couleur d'un étudiant ccoresspond à la section dans laquelle il se trouve. Le code couleur des sections se trouve dans la légende située à droite de ce graphique. Les couleurs des sections changent en <b>fonction du thème de couleur choisi</b>. Une fois un étudiant sélectionné, tous les graphiques ne montrent que les statistiques de cet étudiant et les filtres sont mis à jour en conséquence.`,
-          position: 'auto',
-          title: 'Vue générale',
-        },
-        {
-          element: '#introjs-stakes',
-          intro: `Cette vue ne prend en compte que les sentiments. Cette vue est mise à jour dès que les filtres changent.`,
-          position: 'auto',
-          title: 'Vue des enjeux assoicés aux étudiants',
-        },
-        {
-          element: '#introjs-course-comparison',
-          intro: `Cette  vue compare le comportemment et le niveau des élèves en fonction des matières. Cette vue est mise à jour dès que les filtres changent.`,
-          position: 'auto',
-          title: 'Vue par matière',
-        },
-        {
-          element: '#introjs-level-comparison',
-          intro: `Cette vue compare le comportemment et le niveau des élèves en fonction des classes. Cette vue est mise à jour dès que les filtres changent.`,
-          position: 'auto',
-          title: 'Comparaison entre niveaux',
-        },
-      ],
-      showBullets: true,
-      showButtons: true,
-      exitOnOverlayClick: true,
-      keyboardNavigation: true,
-      nextLabel: 'Suivant',
-      doneLabel: 'Fin',
-      prevLabel: 'Précédent',
-      skipLabel: '',
-    });
-    intro.onbeforechange((targetElem: HTMLElement) => {
-      const scrollParent = this.getScrollParent(targetElem);
-      if (!scrollParent) return;
-      scrollParent.scrollTop =
-        targetElem.offsetTop - scrollParent.offsetTop - 90;
-    });
-    intro.start();
-  }
-
-  private getScrollParent(node: HTMLElement): HTMLElement | undefined {
-    if (node == null) {
-      return undefined;
-    }
-    if (node.scrollHeight > node.clientHeight) {
-      return node;
-    } else {
-      return this.getScrollParent(node.parentNode as HTMLElement);
-    }
   }
 }
