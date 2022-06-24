@@ -1,28 +1,25 @@
-export interface CsvDataEntry {
-  count: number;
-  count2: number;
-  uri: string;
-  lang: string;
-  isDuplicate: string;
-  date: string;
-  time: string;
-  dateTime: string;
-  dateTimePub: string;
-  dataType: string;
-  sim: string;
-  url: string;
-  title: string;
-  body: string;
-  source: object;
-  authors: object;
-  concepts: object;
-  categories: object;
-  image: string;
-  eventUri: string;
-  location: string;
-  sentiment: string;
+export interface DataJsonObject{
+  schema: Object,
+  data: DataEntry[]
+}
+export interface DataEntry {
+  index: number,
+  date: Date,
+  time: string,
+  title: string,
+  source: Source,
+  categories: Category,
+}
+
+export interface Source{
+  uri: string,
+  dataType: string,
+  title: string
+}
+
+export interface Category{
+  uri: string,
+  label: string,
   wgt: number
-  relevance: number;
-  unnamed: string;
 }
 
