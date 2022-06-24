@@ -60,6 +60,6 @@ export class DataService {
         count[element] = 1;
       }
     }
-    console.log(count);
+    return count;
   }
 }

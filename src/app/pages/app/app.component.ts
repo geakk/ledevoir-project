@@ -73,8 +73,9 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.dataService.loadData();
-    await this.dataService.loadCovidData();
+    let articleData = await this.dataService.loadData();
+    let covidData = await this.dataService.loadCovidData();
+    this.dataService.getNbArticlesByDay(articleData)
     this.isLoading = false;
   }
 
