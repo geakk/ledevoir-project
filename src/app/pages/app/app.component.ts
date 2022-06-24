@@ -74,7 +74,6 @@ export class AppComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await this.dataService.loadData();
-    this.schoolName = this.dataService.schoolName;
     this.isLoading = false;
   }
 
