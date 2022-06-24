@@ -2,6 +2,12 @@ export interface DataJsonObject{
   schema: Object,
   data: DataEntry[]
 }
+
+export interface CovidJsonObject{
+  schema: Object,
+  data: Covid[]
+}
+
 export interface DataEntry {
   index: number,
   date: Date,
@@ -23,3 +29,7 @@ export interface Category{
   wgt: number
 }
 
+export interface Covid{
+  "Date de déclaration du cas": Date,
+  "Cas confirmés": number
+}
