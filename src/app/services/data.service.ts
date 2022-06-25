@@ -22,7 +22,6 @@ export class DataService {
     const data = (await this.http
       .get('assets/cas_covid.json')
       .toPromise()) as CovidJsonObject;
-      console.log(this.parseCovidData(data.data))
     return this.parseCovidData(data.data);
   }
 

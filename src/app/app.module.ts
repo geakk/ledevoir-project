@@ -17,6 +17,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { LevelComparisonViewComponent } from './components/level-comparison-view/level-comparison-view.component';
 import { NgModule } from '@angular/core';
 import { StakesViewComponent } from './components/stakes-view/stakes-view.component';
+import { LineChartComponent } from './components/line-chart/line-chart.component'
 
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
@@ -30,6 +31,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     CourseComparisonViewComponent,
     LevelComparisonViewComponent,
     CommentsSummaryViewComponent,
+    LineChartComponent,
   ],
   imports: [
     AppMaterialModule,
