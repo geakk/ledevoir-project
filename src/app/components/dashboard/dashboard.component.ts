@@ -12,7 +12,11 @@ import {
 
 import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatSort, Sort } from '@angular/material/sort';
-import { Covid, DataEntry } from 'src/app/interfaces/data-entry.interface';
+import {
+  Covid,
+  DataEntry,
+  WordData,
+} from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
 
 import { FilterEventsService } from 'src/app/services/filter-events.service';
@@ -22,11 +26,10 @@ import { FilterEventsService } from 'src/app/services/filter-events.service';
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss'],
 })
-export class DashboardComponent implements OnInit
-{
+export class DashboardComponent implements OnInit {
   @Input() articlesData: DataEntry[] = [];
   @Input() covidData: Covid[] = [];
 
-  ngOnInit(): void{
-  }
+
+  ngOnInit(): void {}
 }

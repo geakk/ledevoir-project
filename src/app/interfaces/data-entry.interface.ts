@@ -38,3 +38,11 @@ export interface ArticlesByDay {
   date:Date;
   articles: number
 }
+
+
+export interface WordData {
+  word:string;
+  frequency: number
+}
+
+

@@ -17,8 +17,10 @@ import { HttpClientModule } from '@angular/common/http';
 import { LevelComparisonViewComponent } from './components/level-comparison-view/level-comparison-view.component';
 import { NgModule } from '@angular/core';
 import { StakesViewComponent } from './components/stakes-view/stakes-view.component';
-import { LineChartComponent } from './components/line-chart/line-chart.component'
-
+import { LineChartComponent } from './components/line-chart/line-chart.component';
+import { BarChartComponent } from './components/bar-chart/bar-chart.component';
+import { MatSelectModule } from '@angular/material/select';
+import { ReactiveFormsModule } from '@angular/forms';
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
 };
@@ -32,6 +34,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     LevelComparisonViewComponent,
     CommentsSummaryViewComponent,
     LineChartComponent,
+    BarChartComponent,
   ],
   imports: [
     AppMaterialModule,
@@ -42,6 +45,8 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     FormsModule,
     HttpClientModule,
     PerfectScrollbarModule,
+    MatSelectModule,
+    ReactiveFormsModule,
   ],
   providers: [
     {
