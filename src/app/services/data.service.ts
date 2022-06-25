@@ -1,4 +1,4 @@
-import { Covid, CovidJsonObject, DataEntry, DataJsonObject} from '../interfaces/data-entry.interface';
+import { ArticlesByDay, Covid, CovidJsonObject, DataEntry, DataJsonObject} from '../interfaces/data-entry.interface';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
@@ -22,7 +22,6 @@ export class DataService {
     const data = (await this.http
       .get('assets/cas_covid.json')
       .toPromise()) as CovidJsonObject;
-      console.log(this.parseCovidData(data.data))
     return this.parseCovidData(data.data);
   }
 
@@ -39,11 +38,27 @@ export class DataService {
     return data;
   }
 
+
   private parseCovidData(data: any){
     for(let obj of data){
       let date = new Date(obj["Date de déclaration du cas"]);
       obj["Date de déclaration du cas"] = date;
     }
     return data;
+  }
+
+  public getNbArticlesByDay(data: DataEntry[]){
+    let dateArray = data.map(data => data.date);
+    let dateArrayString = dateArray.map(date => date.toString())
+    const count:any = {};
+
+    for (const element of dateArrayString) {
+      if (count[element]) {
+        count[element] += 1;
+      } else {
+        count[element] = 1;
+      }
+    }
+    return count;
   }
 }

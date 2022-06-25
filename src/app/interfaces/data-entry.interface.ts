@@ -33,3 +33,8 @@ export interface Covid{
   "Date de déclaration du cas": Date,
   "Cas confirmés": number
 }
+
+export interface ArticlesByDay {
+  date:Date;
+  articles: number
+}

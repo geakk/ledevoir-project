@@ -3,6 +3,7 @@ import { ChangeDetectorRef, Component, OnInit, ViewChild } from '@angular/core';
 import { MatIconRegistry } from '@angular/material/icon';
 import { MatDrawer } from '@angular/material/sidenav';
 import { DomSanitizer } from '@angular/platform-browser';
+import { Covid, DataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
 import { FilterEventsService } from 'src/app/services/filter-events.service';
 import { ThemeService } from 'src/app/services/theme.service';
@@ -34,7 +35,8 @@ export class AppComponent implements OnInit {
 
   isLoading = true;
   schoolName: string = '';
-
+  articlesData: DataEntry[] = []
+  covidData: Covid[] = []
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
   
@@ -73,8 +75,9 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    await this.dataService.loadData();
-    await this.dataService.loadCovidData();
+    this.articlesData = await this.dataService.loadData();
+    this.covidData = await this.dataService.loadCovidData();
+    //this.dataService.getNbArticlesByDay(articlesData)
     this.isLoading = false;
   }
 
