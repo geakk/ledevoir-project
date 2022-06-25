@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import * as d3 from 'd3';
+import { AxisScale } from 'd3';
 import { Covid, DataEntry } from '../../interfaces/data-entry.interface';
 import { DataService } from '../../services/data.service';
 import { FilterEventsService } from '../../services/filter-events.service';
@@ -22,8 +23,6 @@ export class StackedAreaChartComponent implements AfterViewInit {
   public yScale: d3.AxisScale<number> | undefined;
   public xScale: d3.AxisScale<Date> | undefined;
 
-  public svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | undefined;
-
   constructor(
     // eslint-disable-next-line no-unused-vars
     public chartElem: ElementRef,
@@ -36,36 +35,68 @@ export class StackedAreaChartComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    this.data = this.dataService.getNbArticlesByDay(this.articlesData);
-    //this.createChart();
+    this.data = this.dataService.getCategoryOccurence(this.articlesData);
+    this.createChart();
   }
 
   createChart() {
     let casCovid = this.covidData.map((d) => d['Cas confirmés']);
-    let dates = Object.keys(this.data).map((d) => new Date(d));
-    let articles: number[] = Object.values(this.data);
+    const nbArticlePerDay = this.dataService.getNbArticlesByDay(
+      this.articlesData
+    );
+    let dates = Object.keys(nbArticlePerDay).map((d) => new Date(d));
+    let articles: number[] = Object.values(nbArticlePerDay);
 
-    this.getXScale(dates);
-
-    this.getYScale();
-
-    this.svg = d3
+    const svg = d3
       .select(this.chartElem.nativeElement)
       .select('.stacked-area-chart')
       .append('svg')
-      .attr('height', this.height);
+      .attr('width', this.width)
+      .attr('height', this.height)
+      .append('g')
+      .style(
+        'transform',
+        'translate(' + this.margin + 'px, ' + this.margin + 'px)'
+      )
+      .call(d3.axisBottom(this.getXScale(dates)));
+    let stack = d3
+      .stack()
+      .keys([
+        'news/Arts_and_Entertainment',
+        'news/Business',
+        'news/Environment',
+        'news/Health',
+        'news/Politics',
+        'news/Science',
+        'news/Sports',
+        'news/Technology',
+      ]);
+    const colors = [
+      '#75d481',
+      '#ff4848',
+      '#ffac2e',
+      '#7dbbf8',
+      '#FDF4E3',
+      '#4D5645',
+      '#755C48',
+      '#6C6874',
+    ];
+    console.log(this.dataService.getArticleByDay(this.articlesData));
+    // let stackedData = stack([this.data]);
+    // console.log(stackedData);
+    // this.getOccurenceDataByWave();
   }
 
-  getXScale(date: Date[]) {
-    this.xScale = d3
+  getXScale(date: Date[]): AxisScale<Date> {
+    return d3
       .scaleTime()
       .domain([this.getMinDate(date), this.getMaxDate(date)])
       .range([this.margin, this.width - 2 * this.margin]);
   }
 
-  getYScale() {
-    this.yScale = d3.scaleLinear().range([0, this.height - 2 * this.margin]);
-  }
+  // getYScale(): ScaleLinear<Date> {
+  //   return d3.scaleLinear().range([0, this.height - 2 * this.margin]);
+  // }
 
   getMinDate(dates: Date[]) {
     return dates.reduce(function (a, b) {

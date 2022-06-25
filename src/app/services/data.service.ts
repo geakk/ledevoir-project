@@ -1,13 +1,12 @@
 /* eslint-disable prettier/prettier */
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 import {
-  ArticlesByDay,
   Covid,
   CovidJsonObject,
   DataEntry,
   DataJsonObject,
 } from '../interfaces/data-entry.interface';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -395,5 +394,19 @@ export class DataService {
       }
     }
     return categoriesCount;
+  }
+
+  getArticleByDay(data: DataEntry[]) {
+    return data.map((data) => ({
+      date: data.date,
+      categorie: this.getCategorie(data.categories),
+    }));
+  }
+
+  getCategorie(categorie: any): String {
+    if (categorie === null || categorie.length == 0) return 'Inconnu';
+    else {
+      return categorie[0].uri;
+    }
   }
 }

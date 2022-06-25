@@ -83,6 +83,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
       .select('.linechart')
       .append('svg')
       .attr('height', this.height);
+
     this.svgInner = this.svg
       .append('g')
       .style(
