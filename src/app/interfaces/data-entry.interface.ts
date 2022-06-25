@@ -14,7 +14,7 @@ export interface DataEntry {
   time: string,
   title: string,
   source: Source,
-  categories: Category,
+  categories: Category[],
 }
 
 export interface Source{

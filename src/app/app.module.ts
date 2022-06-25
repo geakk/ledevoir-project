@@ -21,6 +21,8 @@ import { LineChartComponent } from './components/line-chart/line-chart.component
 import { BarChartComponent } from './components/bar-chart/bar-chart.component';
 import { MatSelectModule } from '@angular/material/select';
 import { ReactiveFormsModule } from '@angular/forms';
+import { SubjectsFrequencyComponent } from './components/subjects-frequency/subjects-frequency.component';
+
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   suppressScrollX: true,
 };
@@ -35,6 +37,7 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     CommentsSummaryViewComponent,
     LineChartComponent,
     BarChartComponent,
+    SubjectsFrequencyComponent
   ],
   imports: [
     AppMaterialModule,
