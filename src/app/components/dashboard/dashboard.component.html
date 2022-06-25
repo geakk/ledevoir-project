@@ -1,6 +1,15 @@
 <mat-divider></mat-divider>
 <div class="summary">
-    <app-line-chart [articlesData]="articlesData" [covidData]="covidData"></app-line-chart>
-    <app-bar-chart ></app-bar-chart>
-    <app-subjects-frequency [articlesData]="articlesData"></app-subjects-frequency>
-</div> 
+  <app-line-chart
+    [articlesData]="articlesData"
+    [covidData]="covidData"
+  ></app-line-chart>
+  <app-bar-chart></app-bar-chart>
+  <app-subjects-frequency
+    [articlesData]="articlesData"
+  ></app-subjects-frequency>
+  <!-- <app-stacked-area-chart
+    [articlesData]="articlesData"
+    [covidData]="covidData"
+  ></app-stacked-area-chart> -->
+</div>
