@@ -2,6 +2,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import {
+  CategoryFrequencyPerDay,
   Covid,
   CovidJsonObject,
   DataEntry,
@@ -397,10 +398,61 @@ export class DataService {
   }
 
   getArticleByDay(data: DataEntry[]) {
-    return data.map((data) => ({
+    const dataArray = data.map((data) => ({
       date: data.date,
       categorie: this.getCategorie(data.categories),
     }));
+    const objectArray: CategoryFrequencyPerDay[] = [];
+    for (const value of dataArray) {
+      const newArray = objectArray.find(
+        (e) => e.date.toDateString() === value.date.toDateString()
+      );
+
+      if (newArray) {
+        switch (value.categorie) {
+          case 'news/Arts_and_Entertainment':
+            newArray.Arts_and_Entertainment++;
+            break;
+          case 'news/Business':
+            newArray.Business++;
+            break;
+          case 'news/Environment':
+            newArray.Environment++;
+            break;
+          case 'news/Health':
+            newArray.Health++;
+            break;
+          case 'news/Politics':
+            newArray.Politics++;
+            break;
+          case 'news/Science':
+            newArray.Science++;
+            break;
+          case 'news/Sports':
+            newArray.Sports++;
+            break;
+          case 'news/Technology':
+            newArray.Technology++;
+            break;
+          case 'Inconnu':
+            newArray.Inconnu++;
+        }
+      } else {
+        objectArray.push({
+          date: value.date,
+          Arts_and_Entertainment: 0,
+          Business: 0,
+          Environment: 0,
+          Health: 0,
+          Politics: 0,
+          Science: 0,
+          Sports: 0,
+          Technology: 0,
+          Inconnu: 0,
+        });
+      }
+    }
+    return objectArray;
   }
 
   getCategorie(categorie: any): String {

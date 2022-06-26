@@ -20,7 +20,6 @@ export class StackedAreaChartComponent implements AfterViewInit {
   private height = 700;
   private margin = 50;
 
-  public yScale: d3.AxisScale<number> | undefined;
   public xScale: d3.AxisScale<Date> | undefined;
 
   constructor(
@@ -62,14 +61,14 @@ export class StackedAreaChartComponent implements AfterViewInit {
     let stack = d3
       .stack()
       .keys([
-        'news/Arts_and_Entertainment',
-        'news/Business',
-        'news/Environment',
-        'news/Health',
-        'news/Politics',
-        'news/Science',
-        'news/Sports',
-        'news/Technology',
+        'Arts_and_Entertainment',
+        'Business',
+        'Environment',
+        'Health',
+        'Politics',
+        'Science',
+        'Sports',
+        'Technology',
       ]);
     const colors = [
       '#75d481',
@@ -81,10 +80,18 @@ export class StackedAreaChartComponent implements AfterViewInit {
       '#755C48',
       '#6C6874',
     ];
-    console.log(this.dataService.getArticleByDay(this.articlesData));
-    // let stackedData = stack([this.data]);
-    // console.log(stackedData);
-    // this.getOccurenceDataByWave();
+    const d = this.dataService.getArticleByDay(this.articlesData);
+    let stackedData = stack(d as Iterable<{ [key: string]: number }>);
+    console.log(stackedData);
+    const stackMaxLength = stackedData[stackedData.length - 1];
+    const yScale = this.getYScale();
+    yScale.domain([
+      0,
+      d3.max(stackMaxLength, function (d: any) {
+        return d[1];
+      }),
+    ]);
+    svg.append('g').call(d3.axisLeft(yScale));
   }
 
   getXScale(date: Date[]): AxisScale<Date> {
@@ -94,9 +101,9 @@ export class StackedAreaChartComponent implements AfterViewInit {
       .range([this.margin, this.width - 2 * this.margin]);
   }
 
-  // getYScale(): ScaleLinear<Date> {
-  //   return d3.scaleLinear().range([0, this.height - 2 * this.margin]);
-  // }
+  getYScale() {
+    return d3.scaleLinear().range([0, this.height - 2 * this.margin]);
+  }
 
   getMinDate(dates: Date[]) {
     return dates.reduce(function (a, b) {

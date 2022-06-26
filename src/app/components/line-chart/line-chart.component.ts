@@ -60,7 +60,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
 
   public ngOnChanges(changes: { hasOwnProperty: (arg0: string) => any }): void {
     if (changes.hasOwnProperty('data') && this.data) {
-      console.log(this.data);
+      // console.log(this.data);
       this.initializeChart();
       this.drawChart();
 
@@ -160,7 +160,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
         (obj as any)[key] = this.data[key];
         return obj;
       }, {});
-    console.log(ordered);
+    // console.log(ordered);
     let dates = Object.keys(ordered).map((d) => new Date(d));
     let articles: number[] = Object.values(ordered);
 

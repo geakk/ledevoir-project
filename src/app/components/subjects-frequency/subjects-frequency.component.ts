@@ -1,4 +1,3 @@
-import * as d3 from 'd3';
 import {
   AfterViewInit,
   Component,
@@ -6,6 +5,7 @@ import {
   Input,
   OnChanges,
 } from '@angular/core';
+import * as d3 from 'd3';
 import { DataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
 import { FilterEventsService } from 'src/app/services/filter-events.service';
@@ -76,7 +76,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   public ngOnChanges(changes: { hasOwnProperty: (args: any) => any }): void {
     // eslint-disable-next-line no-prototype-builtins
     if (changes.hasOwnProperty('data') && this.data) {
-      console.log(this.data);
+      // console.log(this.data);
       this.initializeChart();
       this.drawChart();
 
@@ -459,15 +459,15 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
         this.yScale!(currentSubjectFrequency) as number,
       ]);
     }
-    console.log(this.data);
-    console.log('arts: ' + artsPoints);
-    console.log('business: ' + businessPoints);
-    console.log('environment: ' + environmentPoints);
-    console.log('health: ' + healthPoints);
-    console.log('politics: ' + politicsPoints);
-    console.log('science: ' + sciencePoints);
-    console.log('sports: ' + sportsPoints);
-    console.log('technology: ' + technologyPoints);
+    // console.log(this.data);
+    // console.log('arts: ' + artsPoints);
+    // console.log('business: ' + businessPoints);
+    // console.log('environment: ' + environmentPoints);
+    // console.log('health: ' + healthPoints);
+    // console.log('politics: ' + politicsPoints);
+    // console.log('science: ' + sciencePoints);
+    // console.log('sports: ' + sportsPoints);
+    // console.log('technology: ' + technologyPoints);
     this.arts_and_entertainment!.attr('d', line(artsPoints));
     this.business!.attr('d', line(businessPoints));
     this.environment!.attr('d', line(environmentPoints));
