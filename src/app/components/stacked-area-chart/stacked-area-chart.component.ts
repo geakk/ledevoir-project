@@ -1,7 +1,11 @@
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import * as d3 from 'd3';
 import { AxisScale } from 'd3';
-import { Covid, DataEntry } from '../../interfaces/data-entry.interface';
+import {
+  CategoryFrequencyPerDay,
+  Covid,
+  DataEntry,
+} from '../../interfaces/data-entry.interface';
 import { DataService } from '../../services/data.service';
 import { FilterEventsService } from '../../services/filter-events.service';
 import { ThemeService } from '../../services/theme.service';
@@ -16,9 +20,9 @@ export class StackedAreaChartComponent implements AfterViewInit {
   @Input() covidData: Covid[] = [];
   public data: any;
 
-  private width = 800;
-  private height = 700;
-  private margin = 50;
+  private width = 600;
+  private height = 500;
+  private margin = 60;
 
   public xScale: d3.AxisScale<Date> | undefined;
 
@@ -34,7 +38,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
   ) {}
 
   ngAfterViewInit(): void {
-    this.data = this.dataService.getCategoryOccurence(this.articlesData);
+    this.data = this.dataService.getArticleByDay(this.articlesData);
     this.createChart();
   }
 
@@ -43,8 +47,10 @@ export class StackedAreaChartComponent implements AfterViewInit {
     const nbArticlePerDay = this.dataService.getNbArticlesByDay(
       this.articlesData
     );
-    let dates = Object.keys(nbArticlePerDay).map((d) => new Date(d));
-    let articles: number[] = Object.values(nbArticlePerDay);
+    // let dates = Object.keys(nbArticlePerDay).map((d) => new Date(d));
+    // let articles: number[] = Object.values(nbArticlePerDay);
+    const xScale = this.getXScale(this.data);
+    const yScale = this.getYScale();
 
     const svg = d3
       .select(this.chartElem.nativeElement)
@@ -55,9 +61,13 @@ export class StackedAreaChartComponent implements AfterViewInit {
       .append('g')
       .style(
         'transform',
-        'translate(' + this.margin + 'px, ' + this.margin + 'px)'
-      )
-      .call(d3.axisBottom(this.getXScale(dates)));
+        'translate(' + this.margin / 2 + ',' + this.margin / 2 + ')'
+      );
+    svg
+      .append('g')
+      .attr('transform', 'translate(0,' + (this.height - this.margin) + ')')
+      .call(d3.axisBottom(xScale));
+
     let stack = d3
       .stack()
       .keys([
@@ -80,40 +90,54 @@ export class StackedAreaChartComponent implements AfterViewInit {
       '#755C48',
       '#6C6874',
     ];
-    const d = this.dataService.getArticleByDay(this.articlesData);
-    let stackedData = stack(d as Iterable<{ [key: string]: number }>);
-    console.log(stackedData);
-    const stackMaxLength = stackedData[stackedData.length - 1];
-    const yScale = this.getYScale();
+    let stackedData = stack(this.data);
+
     yScale.domain([
       0,
-      d3.max(stackMaxLength, function (d: any) {
+      d3.max(stackedData[stackedData.length - 1], function (d: any) {
         return d[1];
       }),
     ]);
-    svg.append('g').call(d3.axisLeft(yScale));
+    svg.append('g').call(d3.axisRight(yScale));
+
+    let area = d3
+      .area()
+      .x((d: any) => xScale(d.date))
+      .y0((d: any) => yScale(d.date(d[0])))
+      .y1((d: any) => yScale(d.date(d[1])));
+
+    let series = svg
+      .selectAll('g.series')
+      .data(stackedData)
+      .enter()
+      .append('g')
+      .attr('class', 'series');
+
+    series
+      .append('path')
+      .style('fill', function (d, i) {
+        return colors[i];
+      })
+      .attr('d', function (d: any) {
+        return area(d);
+      });
   }
 
-  getXScale(date: Date[]): AxisScale<Date> {
+  getXScale(data: CategoryFrequencyPerDay[]): AxisScale<Date> {
     return d3
       .scaleTime()
-      .domain([this.getMinDate(date), this.getMaxDate(date)])
+      .domain([
+        d3.min(data, function (d: any) {
+          return d.date;
+        }),
+        d3.max(data, function (d: any) {
+          return d.date;
+        }),
+      ])
       .range([this.margin, this.width - 2 * this.margin]);
   }
 
   getYScale() {
-    return d3.scaleLinear().range([0, this.height - 2 * this.margin]);
-  }
-
-  getMinDate(dates: Date[]) {
-    return dates.reduce(function (a, b) {
-      return a < b ? a : b;
-    });
-  }
-
-  getMaxDate(dates: Date[]) {
-    return dates.reduce(function (a, b) {
-      return a > b ? a : b;
-    });
+    return d3.scaleLinear().range([this.margin, this.height - 2 * this.margin]);
   }
 }
