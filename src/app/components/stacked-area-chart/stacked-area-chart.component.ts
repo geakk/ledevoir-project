@@ -88,7 +88,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
 
     let xAxis = svg
       .append('g')
-      .attr('transform', 'translate(0,' + this.height + ')')
+      .attr('transform', 'translate(0,' + (this.height - 2 * this.margin.top)  + 'px)')
       .call(d3.axisBottom(x).ticks(6));
 
     svg
@@ -107,7 +107,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
       .attr('text-anchor', 'start');
 
     const y = this.getYScale();
-    svg.append('g').attr('transform', 'translate(' + this.width + ', 0)')
+    svg.append('g').attr('transform', 'translate(' + this.margin.left + 'px, 0)')
     .call(d3.axisLeft(y).ticks(5));
 
     let area = d3
@@ -188,11 +188,12 @@ export class StackedAreaChartComponent implements AfterViewInit {
           return d.date;
         }),
       ])
-      .range([0, this.width]);
+      .range([this.margin.top, this.width - 2 * this.margin.top]);
   }
 
   getYScale() {
-    return d3.scaleLinear().domain([0, 500]).range([this.height, 0]);
+    return d3.scaleLinear().domain([0, 500]).range([0, this.height - 2 * this.margin.left]);
+
   }
 
   highlight(_event: any, d: any) {
