@@ -1,6 +1,7 @@
+import { E, X } from '@angular/cdk/keycodes';
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import * as d3 from 'd3';
-import { AxisScale } from 'd3';
+import { area, AxisScale, stack } from 'd3';
 import {
   CategoryFrequencyPerDay,
   Covid,
@@ -18,12 +19,28 @@ import { ThemeService } from '../../services/theme.service';
 export class StackedAreaChartComponent implements AfterViewInit {
   @Input() articlesData: DataEntry[] = [];
   @Input() covidData: Covid[] = [];
-  public data: any;
+  public data: CategoryFrequencyPerDay[] =[];
 
-  private width = 600;
-  private height = 500;
-  private margin = 60;
 
+  private margin = {top:50, right: 230, bottom: 50, left: 50};
+  private width = 600-this.margin.left -this.margin.right;
+  private height = 400 - this.margin.top - this.margin.bottom;
+  private idleTimeout: any| null;
+  private x!: d3.ScaleLinear<number, number, never>;
+  private areaChart!: d3.Selection<SVGGElement, unknown, null, undefined>;
+  private brush!: d3.BrushBehavior<unknown>;
+  private xAxis!: d3.Selection<SVGGElement, unknown, null, undefined>;
+  private area!: d3.Area<[number, number]>;
+private keys = [
+  'Arts_and_Entertainment',
+  'Business',
+  'Environment',
+  'Health',
+  'Politics',
+  'Science',
+  'Sports',
+  'Technology',
+];
   public xScale: d3.AxisScale<Date> | undefined;
 
   constructor(
@@ -43,89 +60,59 @@ export class StackedAreaChartComponent implements AfterViewInit {
   }
 
   createChart() {
-    let casCovid = this.covidData.map((d) => d['Cas confirmés']);
-    const nbArticlePerDay = this.dataService.getNbArticlesByDay(
-      this.articlesData
-    );
-    // let dates = Object.keys(nbArticlePerDay).map((d) => new Date(d));
-    // let articles: number[] = Object.values(nbArticlePerDay);
-    const xScale = this.getXScale(this.data);
-    const yScale = this.getYScale();
+
 
     const svg = d3
       .select(this.chartElem.nativeElement)
       .select('.stacked-area-chart')
       .append('svg')
-      .attr('width', this.width)
-      .attr('height', this.height)
+      .attr('width', this.width + this.margin.left + this.margin.right)
+      .attr('height', this.height + this.margin.top + this.margin.bottom)
       .append('g')
       .style(
         'transform',
-        'translate(' + this.margin / 2 + ',' + this.margin / 2 + ')'
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
-    svg
+
+    let color = d3.scaleOrdinal().domain(this.keys).range(d3.schemeSet2);
+    let stackedData = d3.stack().keys(this.keys)(this.data as any);
+
+    this.x = this.getXScale(this.data);
+     this.xAxis =  svg
       .append('g')
-      .attr('transform', 'translate(0,' + (this.height - this.margin) + ')')
-      .call(d3.axisBottom(xScale));
+      .attr('transform', 'translate(0,' + this.height + ')')
+      .call(d3.axisBottom(this.x).ticks(6));
 
-    let stack = d3
-      .stack()
-      .keys([
-        'Arts_and_Entertainment',
-        'Business',
-        'Environment',
-        'Health',
-        'Politics',
-        'Science',
-        'Sports',
-        'Technology',
-      ]);
-    const colors = [
-      '#75d481',
-      '#ff4848',
-      '#ffac2e',
-      '#7dbbf8',
-      '#FDF4E3',
-      '#4D5645',
-      '#755C48',
-      '#6C6874',
-    ];
-    let stackedData = stack(this.data);
 
-    yScale.domain([
-      0,
-      d3.max(stackedData[stackedData.length - 1], function (d: any) {
-        return d[1];
-      }),
-    ]);
-    svg.append('g').call(d3.axisRight(yScale));
 
-    let area = d3
-      .area()
-      .x((d: any) => xScale(d.date))
-      .y0((d: any) => yScale(d.date(d[0])))
-      .y1((d: any) => yScale(d.date(d[1])));
+    svg.append('text').attr('text-anchor', 'end').attr('x', this.width).attr('y', this.height+40).text('Time(Year)');
+    svg.append('text').attr('text-anchor', 'end').attr('x',0).attr('y', -20).text('nombre de reportage').attr('text-anchor', 'start');
 
-    let series = svg
-      .selectAll('g.series')
-      .data(stackedData)
-      .enter()
-      .append('g')
-      .attr('class', 'series');
+    const y = this.getYScale();
+    svg.append('g').call(d3.axisLeft(y).ticks(5))
 
-    series
-      .append('path')
-      .style('fill', function (d, i) {
-        return colors[i];
-      })
-      .attr('d', function (d: any) {
-        return area(d);
-      });
+
+    let clip = svg.append("defs").append('svg:clipPath').attr('id', 'clip').append('svg:rect').attr('width', this.width).attr('height', this.height).attr('x',0).attr('y',0);
+
+    this.brush = d3.brushX().extent([[0,0],[this.width,this.height]]).on('end', this.updateChart)
+
+    this.areaChart = svg.append('g').attr('clip:path', 'url(#clip)')
+
+     this.area = d3.area().x((d:any)=>{return this.x(d.data.date)}).y0((d)=>{return y(d[0])}).y1((d)=> {return y(d[1])})
+    this.areaChart.selectAll('mylayers').data(stackedData).enter().append('path').attr('class', (d)=> {return 'MyArea'+ d.key}).style('fill', (d)=>{return color(d.key) as any}).attr("d", this.area as any)
+     this.areaChart.append('g').attr('class', 'brush').call(this.brush)
+
+     const size = 20 
+     svg.selectAll('myrect').data(this.keys).join('rect').attr('x', 400).attr('y', (d,i)=>{return 10+i*(size+5)}).attr('width', size)
+     .attr('height',size).style('fill', (d)=>{ return color(d) as any}).on("mouseover", this.highlight).on('mouseleave', this.nonHighlight); 
+     svg.selectAll('mylabels').data(this.keys).join('text').attr("x", 400+size*1.2).attr('y', (d,i)=>{return 10+ i*(size+5) + (size/2)}).style('fill', (d)=>{return color(d) as any })
+     .text((d)=>{return d}).attr('text-anchor','left').style('alignment-baseline', 'middle').on('mouseover', this.highlight).on('mouseleave', this.nonHighlight)
+
   }
 
-  getXScale(data: CategoryFrequencyPerDay[]): AxisScale<Date> {
+  getXScale(data: CategoryFrequencyPerDay[]) {
     return d3
-      .scaleTime()
+      .scaleLinear()
       .domain([
         d3.min(data, function (d: any) {
           return d.date;
@@ -134,10 +121,41 @@ export class StackedAreaChartComponent implements AfterViewInit {
           return d.date;
         }),
       ])
-      .range([this.margin, this.width - 2 * this.margin]);
+      .range([0, this.width]);
   }
 
   getYScale() {
-    return d3.scaleLinear().range([this.margin, this.height - 2 * this.margin]);
+    return d3.scaleLinear().domain([0,500]).range([this.height, 0]);
   }
+
+  updateChart(event:any, d:any){
+    const extent = event.selection
+    if(!extent){
+      if(!this.idleTimeout) return this.idleTimeout = setTimeout(this.idled, 350)
+      this.x.domain([d3.min(this.data, function (d: any) {
+          return d.date;
+        }),
+        d3.max(this.data, function (d: any) {
+          return d.date;
+        })])
+    }else{
+      this.x.domain([this.x.invert(extent[0]), this.x.invert(extent[1])])
+      this.areaChart.select('.brush').call(this.brush.move as any, null )
+    }
+    this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(5));
+    this.areaChart.selectAll('path').transition().duration(1000).attr('d', this.area as any)
+    return;
+  }
+
+  highlight(event:any,d:any){
+    d3.selectAll(".myArea").style('opcaity', .1)
+    d3.select("."+d).style("opacity", 1)
+  }
+  nonHighlight(event:any,d:any){
+    d3.select(".myArea").style("opacity", 1)
+  }
+
+   idled(){
+     this.idleTimeout = null;
+   }
 }

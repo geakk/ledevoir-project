@@ -13,6 +13,8 @@ import {
   providedIn: 'root',
 })
 export class DataService {
+  static dataStorageKey = "dataStorageKey"
+  static covidDataStorageKey = 'covidDataKey'
   constructor(
     // eslint-disable-next-line no-unused-vars
     private readonly http: HttpClient
@@ -459,6 +461,34 @@ export class DataService {
     if (categorie === null || categorie.length == 0) return 'Inconnu';
     else {
       return categorie[0].uri;
+    }
+  }
+
+  static storageKey = 'ledevoir-theme';
+
+  storeData(covidData: Covid[]) {
+    try {
+      window.localStorage[DataService.covidDataStorageKey] = JSON.stringify(covidData);
+
+    } catch {
+      console.error('Unable to set theme in local storage');
+    }
+  }
+
+  getCovidStoredData(): string | null {
+    try {
+      return window.localStorage[DataService.covidDataStorageKey] || null;
+    } catch {
+      return null;
+    }
+  }
+
+  clearStorage() {
+    try {
+      window.localStorage.removeItem(DataService.covidDataStorageKey);
+
+    } catch {
+      console.error('Unable to remove theme from local storage');
     }
   }
 }
