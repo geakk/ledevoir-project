@@ -27,9 +27,10 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
   public lineGroupCovid:
     | d3.Selection<SVGPathElement, unknown, null, undefined>
     | undefined;
-  private width = 800;
-  private height = 700;
-  private margin = 50;
+    private margin = { top: 50, right: 230, bottom: 50, left: 50 };
+    private width = 800 - this.margin.left - this.margin.right;
+    private height = 700 - this.margin.top - this.margin.bottom;
+  
 
   public svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | undefined;
   public svgInner:
@@ -60,7 +61,6 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
 
   public ngOnChanges(changes: { hasOwnProperty: (arg0: string) => any }): void {
     if (changes.hasOwnProperty('data') && this.data) {
-      // console.log(this.data);
       this.initializeChart();
       this.drawChart();
 
@@ -71,7 +71,6 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
   private initializeChart(): void {
     let casCovid = this.covidData.map((d) => d['Cas confirmés']);
     let dates = Object.keys(this.data).map((d) => new Date(d));
-    let articles: number[] = Object.values(this.data);
     let minDate = dates.reduce(function (a, b) {
       return a < b ? a : b;
     });
@@ -82,19 +81,20 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
       .select(this.chartElem.nativeElement)
       .select('.linechart')
       .append('svg')
+      .attr('width', this.width)
       .attr('height', this.height);
 
     this.svgInner = this.svg
       .append('g')
       .style(
         'transform',
-        'translate(' + this.margin + 'px, ' + this.margin + 'px)'
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
 
     this.yScale = d3
       .scaleLinear()
       .domain([Math.max(...casCovid) + 1, Math.min(...casCovid) - 1])
-      .range([0, this.height - 2 * this.margin]);
+      .range([0, this.height - 2 * this.margin.left]);
 
     this.yAxis = this.svgInner
       .append('g')
@@ -104,14 +104,14 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
     this.xScale = d3
       .scaleTime()
       .domain([minDate, maxDate])
-      .range([this.margin, this.width - 2 * this.margin]);
+      .range([this.margin.top, this.width - 2 * this.margin.top]);
 
     this.xAxis = this.svgInner
       .append('g')
       .attr('id', 'x-axis')
       .style(
         'transform',
-        'translate(0, ' + (this.height - 2 * this.margin) + 'px)'
+        'translate(0, ' + (this.height - 2 * this.margin.top) + 'px)'
       );
 
     this.lineGroup = this.svgInner
@@ -132,7 +132,6 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
   }
 
   private drawChart(): void {
-    this.width = this.chartElem.nativeElement.getBoundingClientRect().width;
     this.svg!.attr('width', this.width);
 
     const xAxis = d3
@@ -160,7 +159,6 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
         (obj as any)[key] = this.data[key];
         return obj;
       }, {});
-    // console.log(ordered);
     let dates = Object.keys(ordered).map((d) => new Date(d));
     let articles: number[] = Object.values(ordered);
 
@@ -181,7 +179,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
 
     this.svgInner!.append('text')
       .attr('x', this.width / 4)
-      .attr('y', 0 - this.margin / 2)
+      .attr('y', 0 - this.margin.top / 2)
       .attr('text-anchor', 'middle')
       .style('font-size', '16px')
       .style('text-decoration', 'underline')
