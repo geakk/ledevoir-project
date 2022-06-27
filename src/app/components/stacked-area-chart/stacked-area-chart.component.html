@@ -1,1 +1,13 @@
+<mat-form-field appearance="outline">
+    <mat-label>Choisissez la vague</mat-label>
+    <mat-select [(value)]="selected" (selectionChange)="updateData($event)" >
+      <mat-option selected value="first">Vague 1</mat-option>
+      <mat-option value="second" >Vague 2</mat-option>
+      <mat-option value="third">Vague 3</mat-option>
+      <mat-option value="fourth">Vague 4</mat-option>
+      <mat-option value="fifth">Vague 5</mat-option>
+      <mat-option value="six">Vague 6</mat-option>
+
+    </mat-select>
+  </mat-form-field>
 <div class="stacked-area-chart"></div>

@@ -1,4 +1,5 @@
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
+import { MatSelectChange } from '@angular/material/select';
 import * as d3 from 'd3';
 import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveEndDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from 'src/app/constants/themes';
 import {
@@ -21,6 +22,8 @@ export class StackedAreaChartComponent implements AfterViewInit {
   public data: CategoryFrequencyPerDay[] = [];
   public articleDataByDay: CategoryFrequencyPerDay[] = [];
 
+  selected = 'Vague 1';
+
 
   private margin = { top: 50, right: 230, bottom: 50, left: 50 };
   private width = 800 - this.margin.left - this.margin.right;
@@ -36,7 +39,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
     'Technology',
   ];
   public xScale: d3.AxisScale<Date> | undefined;
-
+public tooltip: any;
   constructor(
     // eslint-disable-next-line no-unused-vars
     public chartElem: ElementRef,
@@ -51,15 +54,20 @@ export class StackedAreaChartComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.articleDataByDay = this.dataService.getArticleByDay(this.articlesData);
-    this.data = this.getDataByWave('first');
+    this.data = this.getDataByWave('third');
      this.createChart();
+       this.tooltip = d3.select("body").append("div")
+        .attr("class", "tooltip")
+        .style("opacity", 0);
   }
 
   createChart() {
+    d3.selectAll('.stacked-area-chart').remove();
+
     const svg = d3
       .select(this.chartElem.nativeElement)
-      .select('.stacked-area-chart')
       .append('svg')
+      .attr('class', 'stacked-area-chart')
       .attr('width', this.width + this.margin.left + this.margin.right)
       .attr('height', this.height + this.margin.top + this.margin.bottom)
       .append('g')
@@ -120,7 +128,9 @@ export class StackedAreaChartComponent implements AfterViewInit {
         return color(d) as any;
 
       }).attr('stroke-width', 2)
-      .attr('d', area as any);
+      .attr('d', area as any)
+      .on('mouseover', this.showTooltip)
+      .on('mouseleave', this.noShowTooltip);;
 
     const size = 20;
     
@@ -187,6 +197,22 @@ export class StackedAreaChartComponent implements AfterViewInit {
     d3.selectAll('.myArea').style('opacity', 1);
   }
 
+  showTooltip(event: any, d: any){
+    this.tooltip.transition()
+               .duration(200)
+               .style("opacity", .9)
+               this.tooltip.html( "<br><strong><span style='color:white'>UserName:"+ d.User_ID +" </span><span style='color:white'></strong>")
+               .style("left", (event.pageX ) + "px")
+               .style("top", (event.pageY ) + "px");
+
+  }
+
+  noShowTooltip(event: any, d: any){
+    this.tooltip.transition()
+    .duration(500)
+    .style("opacity", 0);
+  }
+
   getDataByWave(wave: string): CategoryFrequencyPerDay[]{
     let data = null;
   switch(wave){
@@ -224,4 +250,8 @@ export class StackedAreaChartComponent implements AfterViewInit {
 return data as CategoryFrequencyPerDay[]
   }
 
+  updateData(event: MatSelectChange): void {
+    this.data = this.getDataByWave(event.value);
+    this.createChart();
+  }
 }
