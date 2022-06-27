@@ -1,35 +1,36 @@
 /* eslint-disable prettier/prettier */
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import * as d3 from 'd3';
+import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from '../constants/themes';
+
 import {
-  ArticlesByDay,
+  CategoryFrequencyPerDay,
   Covid,
   CovidJsonObject,
   DataEntry,
   DataJsonObject,
 } from '../interfaces/data-entry.interface';
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
+  static covidDataStorageKey = 'covidDataKey'
   constructor(
     // eslint-disable-next-line no-unused-vars
     private readonly http: HttpClient
   ) {}
 
   async loadData(): Promise<DataEntry[]> {
-    const data = (await this.http
-      .get('assets/articles_covid.json')
-      .toPromise()) as DataJsonObject;
-    return this.parseData(data.data);
+    const data = await  d3.json
+      ('/assets/articles_covid.json');
+    return this.parseData((data as any).data);
   }
 
   async loadCovidData(): Promise<Covid[]> {
-    const data = (await this.http
-      .get('assets/cas_covid.json')
-      .toPromise()) as CovidJsonObject;
-    return this.parseCovidData(data.data);
+    const data = (await d3.json('/assets/cas_covid.json'));
+    return this.parseCovidData((data as any).data);
   }
 
   private parseData(data: any) {
@@ -134,23 +135,7 @@ export class DataService {
       },
     };
 
-    const firstWaveStartDate = new Date('2020-02-23');
-    const firstWaveEndDate = new Date('2020-07-11');
 
-    const secondWaveStartDate = new Date('2020-08-23');
-    const secondWaveEndDate = new Date('2021-03-20');
-
-    const thirdWaveStartDate = new Date('2021-03-21');
-    const thirdWaveEndDate = new Date('2021-07-17');
-
-    const fourthWaveStartDate = new Date('2021-07-18');
-    const fourthWaveEndDate = new Date('2021-12-04');
-
-    const fivethWaveStartDate = new Date('2021-12-05');
-    const fivethWaveEndDate = new Date('2022-03-12');
-
-    const sixthWaveStartDate = new Date('2020-03-13');
-    // const sixthWaveEndDate = new Date('2020-07-11');
 
     for (let i = 0; i < data.length; i++) {
       try {
@@ -395,5 +380,99 @@ export class DataService {
       }
     }
     return categoriesCount;
+  }
+
+  getArticleByDay(data: DataEntry[]) {
+    
+    const dataArray = data.map((data) => ({
+      date: data.date,
+      categorie: this.getCategorie(data.categories),
+    }));
+    const objectArray: CategoryFrequencyPerDay[] = [];
+    for (const value of dataArray) {
+      const newArray = objectArray.find(
+        (e) => e.date.toDateString() === value.date.toDateString()
+      );
+
+      if (newArray) {
+        switch (value.categorie) {
+          case 'news/Arts_and_Entertainment':
+            newArray.Arts_and_Entertainment++;
+            break;
+          case 'news/Business':
+            newArray.Business++;
+            break;
+          case 'news/Environment':
+            newArray.Environment++;
+            break;
+          case 'news/Health':
+            newArray.Health++;
+            break;
+          case 'news/Politics':
+            newArray.Politics++;
+            break;
+          case 'news/Science':
+            newArray.Science++;
+            break;
+          case 'news/Sports':
+            newArray.Sports++;
+            break;
+          case 'news/Technology':
+            newArray.Technology++;
+            break;
+          case 'Inconnu':
+            newArray.Inconnu++;
+        }
+      } else {
+        objectArray.push({
+          date: value.date,
+          Arts_and_Entertainment: 0,
+          Business: 0,
+          Environment: 0,
+          Health: 0,
+          Politics: 0,
+          Science: 0,
+          Sports: 0,
+          Technology: 0,
+          Inconnu: 0,
+        });
+      }
+    }
+    return objectArray;
+  }
+
+  getCategorie(categorie: any): String {
+    if (categorie === null || categorie.length == 0) return 'Inconnu';
+    else {
+      return categorie[0].uri;
+    }
+  }
+
+  static storageKey = 'ledevoir-theme';
+
+  storeData(covidData: Covid[]) {
+    try {
+      window.localStorage[DataService.covidDataStorageKey] = JSON.stringify(covidData);
+
+    } catch {
+      console.error('Unable to set theme in local storage');
+    }
+  }
+
+  getCovidStoredData(): string | null {
+    try {
+      return window.localStorage[DataService.covidDataStorageKey] || null;
+    } catch {
+      return null;
+    }
+  }
+
+  clearStorage() {
+    try {
+      window.localStorage.removeItem(DataService.covidDataStorageKey);
+
+    } catch {
+      console.error('Unable to remove theme from local storage');
+    }
   }
 }

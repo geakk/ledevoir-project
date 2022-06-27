@@ -1,4 +1,3 @@
-import * as d3 from 'd3';
 import {
   AfterViewInit,
   Component,
@@ -6,6 +5,7 @@ import {
   Input,
   OnChanges,
 } from '@angular/core';
+import * as d3 from 'd3';
 import { DataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
 import { FilterEventsService } from 'src/app/services/filter-events.service';
@@ -42,9 +42,10 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   public technology:
     | d3.Selection<SVGPathElement, unknown, null, undefined>
     | undefined;
-  private width = 800;
-  private height = 700;
-  private margin = 50;
+
+  private margin = { top: 50, right: 230, bottom: 50, left: 50 };
+  private width = 800 - this.margin.left - this.margin.right;
+  private height = 700 - this.margin.top - this.margin.bottom;
 
   public svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | undefined;
   public svgInner:
@@ -76,7 +77,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   public ngOnChanges(changes: { hasOwnProperty: (args: any) => any }): void {
     // eslint-disable-next-line no-prototype-builtins
     if (changes.hasOwnProperty('data') && this.data) {
-      console.log(this.data);
+      // console.log(this.data);
       this.initializeChart();
       this.drawChart();
 
@@ -87,37 +88,38 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   private initializeChart(): void {
     this.svg = d3
       .select(this.chartElem.nativeElement)
-      .select('.linechart')
+      .select('.subject-frequency')
       .append('svg')
+      .attr('width', this.width)
       .attr('height', this.height);
     this.svgInner = this.svg
       .append('g')
       .style(
         'transform',
-        'translate(' + this.margin + 'px, ' + this.margin + 'px)'
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
 
     this.yScale = d3
       .scaleLinear()
       .domain([20000, 0])
-      .range([0, this.height - 2 * this.margin]);
+      .range([0, this.height - 2 * this.margin.left]);
 
     this.yAxis = this.svgInner
       .append('g')
       .attr('id', 'y-axis')
-      .style('transform', 'translate(' + this.margin + 'px,  0)');
+      .style('transform', 'translate(' + this.margin.left +  'px,  0)');
 
     this.xScale = d3
       .scaleLinear()
       .domain([0, 6])
-      .range([this.margin, this.width - 2 * this.margin]);
+      .range([this.margin.top, this.width - 2 * this.margin.top]);
 
     this.xAxis = this.svgInner
       .append('g')
       .attr('id', 'x-axis')
       .style(
         'transform',
-        'translate(0, ' + (this.height - 2 * this.margin) + 'px)'
+        'translate(0, ' + (this.height - 2 * this.margin.top) + 'px)'
       );
 
     this.arts_and_entertainment = this.svgInner
@@ -186,7 +188,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   }
 
   private drawChart(): void {
-    this.width = this.chartElem.nativeElement.getBoundingClientRect().width;
     this.svg!.attr('width', this.width);
 
     const xAxis = d3.axisBottom(this.xScale!);
@@ -459,15 +460,15 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
         this.yScale!(currentSubjectFrequency) as number,
       ]);
     }
-    console.log(this.data);
-    console.log('arts: ' + artsPoints);
-    console.log('business: ' + businessPoints);
-    console.log('environment: ' + environmentPoints);
-    console.log('health: ' + healthPoints);
-    console.log('politics: ' + politicsPoints);
-    console.log('science: ' + sciencePoints);
-    console.log('sports: ' + sportsPoints);
-    console.log('technology: ' + technologyPoints);
+    // console.log(this.data);
+    // console.log('arts: ' + artsPoints);
+    // console.log('business: ' + businessPoints);
+    // console.log('environment: ' + environmentPoints);
+    // console.log('health: ' + healthPoints);
+    // console.log('politics: ' + politicsPoints);
+    // console.log('science: ' + sciencePoints);
+    // console.log('sports: ' + sportsPoints);
+    // console.log('technology: ' + technologyPoints);
     this.arts_and_entertainment!.attr('d', line(artsPoints));
     this.business!.attr('d', line(businessPoints));
     this.environment!.attr('d', line(environmentPoints));
@@ -479,7 +480,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
 
     this.svgInner!.append('text')
       .attr('x', this.width / 4)
-      .attr('y', 0 - this.margin / 2)
+      .attr('y', 0 - this.margin.top / 2)
       .attr('text-anchor', 'middle')
       .style('font-size', '16px')
       .style('text-decoration', 'underline')

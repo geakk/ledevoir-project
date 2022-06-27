@@ -17,7 +17,7 @@ import { WordData } from 'src/app/interfaces/data-entry.interface';
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.scss'],
 })
-export class BarChartComponent implements OnInit, AfterViewInit {
+export class BarChartComponent implements AfterViewInit {
   constructor() {}
 
   @ViewChild('barChart')
@@ -62,7 +62,6 @@ export class BarChartComponent implements OnInit, AfterViewInit {
       { word: 'Hospitalisations', frequency: 878 },
     ],
   ];
-  ngOnInit() {}
 
   ngAfterViewInit(): void {
     this.data = this.waves[0];
@@ -71,8 +70,6 @@ export class BarChartComponent implements OnInit, AfterViewInit {
 
   // create function with d3 to create a bar chart
   private createChart(): void {
-    d3.selectAll('.barChar').remove();
-
     const element = this.chartContainer.nativeElement;
     const data = this.data;
 
@@ -130,6 +127,7 @@ export class BarChartComponent implements OnInit, AfterViewInit {
 
   updateData(event: MatSelectChange): void {
     this.data = this.waves[Number(event.value)];
+    d3.selectAll('.barChar').remove();
     this.createChart();
   }
 }
