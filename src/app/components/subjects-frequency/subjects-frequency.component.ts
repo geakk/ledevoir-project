@@ -188,7 +188,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   }
 
   private drawChart(): void {
-    this.width = this.chartElem.nativeElement.getBoundingClientRect().width;
     this.svg!.attr('width', this.width);
 
     const xAxis = d3.axisBottom(this.xScale!);
