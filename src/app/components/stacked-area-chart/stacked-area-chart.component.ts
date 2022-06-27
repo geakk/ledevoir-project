@@ -51,7 +51,6 @@ export class StackedAreaChartComponent implements AfterViewInit {
     'Technology',
   ];
   public xScale: d3.AxisScale<Date> | undefined;
-  public tooltip: any;
   constructor(
     // eslint-disable-next-line no-unused-vars
     public chartElem: ElementRef,
@@ -83,7 +82,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
         'transform',
         'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
-    this.tooltip = d3
+    let tooltip = d3
       .select('stacked-area-chart')
       .append('div')
       .attr('class', 'tooltip')
@@ -143,8 +142,17 @@ export class StackedAreaChartComponent implements AfterViewInit {
       })
       .attr('stroke-width', 2)
       .attr('d', area as any)
-      .on('mouseover', this.showTooltip)
-      .on('mouseleave', this.noShowTooltip);
+      .on('mouseover', (event, d)=>{
+        tooltip.transition()
+        .duration(200)
+        .style("opacity", .9)
+        tooltip.html(this.getToolTipHtml(d)).style("left", (event.pageX ) + "px")
+        .style("top", (event.pageY ) + "px");
+      })
+      .on('mouseleave', ()=>{
+        tooltip.transition().duration(500).style('opacity', 0);
+
+      });
 
     const size = 20;
 
@@ -210,12 +218,9 @@ export class StackedAreaChartComponent implements AfterViewInit {
     d3.selectAll('.myArea').style('opacity', 1);
   }
 
-  showTooltip(event: any, d: any) {
-    this.tooltip.transition().duration(200).style('opacity', 0.9);
-    this.tooltip
-      .html(
-        `<div>date : <span class="tooltip-value">${d.date} </span></div>
-            <div> Articles de categorie Arts_and_Entertainment :  <span class="tooltip-value">${d.Arts_and_Entertainment}</span></div>
+  getToolTipHtml(d: any) {
+    return `<div>date : <span class="tooltip-value">${d.date} </span></div>
+    <div> Articles de categorie Arts_and_Entertainment :  <span class="tooltip-value">${d.Arts_and_Entertainment}</span></div>
     <div> Articles de categorie Business :  <span class="tooltip-value">${d.Business} </span></div>
     <div> Articles de categorie Environment :  <span class="tooltip-value">${d.Environment} </span></div>
     <div> Articles de categorie Health : <span class="tooltip-value">${d.Health} </span> </div>
@@ -223,14 +228,9 @@ export class StackedAreaChartComponent implements AfterViewInit {
     <div> Articles de categorie Science :  <span class="tooltip-value">${d.Science} </span></div>
     <div> Articles de categorie Sports :  <span class="tooltip-value">${d.Sports} </span></div>
     <div> Articles de categorieTechnology :  <span class="tooltip-value">${d.Science} </span></div>`
-      )
-      .style('left', event.pageX + 'px')
-      .style('top', event.pageY + 'px');
+      
   }
 
-  noShowTooltip(_event: any, _d: any) {
-    this.tooltip.transition().duration(500).style('opacity', 0);
-  }
 
   getDataByWave(wave: string): CategoryFrequencyPerDay[] {
     let data = null;
