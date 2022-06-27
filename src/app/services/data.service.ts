@@ -1,6 +1,9 @@
 /* eslint-disable prettier/prettier */
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
+import * as d3 from 'd3';
+import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from '../constants/themes';
+
 import {
   CategoryFrequencyPerDay,
   Covid,
@@ -13,7 +16,6 @@ import {
   providedIn: 'root',
 })
 export class DataService {
-  static dataStorageKey = "dataStorageKey"
   static covidDataStorageKey = 'covidDataKey'
   constructor(
     // eslint-disable-next-line no-unused-vars
@@ -21,17 +23,14 @@ export class DataService {
   ) {}
 
   async loadData(): Promise<DataEntry[]> {
-    const data = (await this.http
-      .get('assets/articles_covid.json')
-      .toPromise()) as DataJsonObject;
-    return this.parseData(data.data);
+    const data = await  d3.json
+      ('/assets/articles_covid.json');
+    return this.parseData((data as any).data);
   }
 
   async loadCovidData(): Promise<Covid[]> {
-    const data = (await this.http
-      .get('assets/cas_covid.json')
-      .toPromise()) as CovidJsonObject;
-    return this.parseCovidData(data.data);
+    const data = (await d3.json('/assets/cas_covid.json'));
+    return this.parseCovidData((data as any).data);
   }
 
   private parseData(data: any) {
@@ -136,23 +135,7 @@ export class DataService {
       },
     };
 
-    const firstWaveStartDate = new Date('2020-02-23');
-    const firstWaveEndDate = new Date('2020-07-11');
 
-    const secondWaveStartDate = new Date('2020-08-23');
-    const secondWaveEndDate = new Date('2021-03-20');
-
-    const thirdWaveStartDate = new Date('2021-03-21');
-    const thirdWaveEndDate = new Date('2021-07-17');
-
-    const fourthWaveStartDate = new Date('2021-07-18');
-    const fourthWaveEndDate = new Date('2021-12-04');
-
-    const fivethWaveStartDate = new Date('2021-12-05');
-    const fivethWaveEndDate = new Date('2022-03-12');
-
-    const sixthWaveStartDate = new Date('2020-03-13');
-    // const sixthWaveEndDate = new Date('2020-07-11');
 
     for (let i = 0; i < data.length; i++) {
       try {
@@ -400,6 +383,7 @@ export class DataService {
   }
 
   getArticleByDay(data: DataEntry[]) {
+    
     const dataArray = data.map((data) => ({
       date: data.date,
       categorie: this.getCategorie(data.categories),

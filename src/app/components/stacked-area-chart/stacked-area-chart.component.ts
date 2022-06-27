@@ -1,5 +1,6 @@
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import * as d3 from 'd3';
+import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveEndDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from 'src/app/constants/themes';
 import {
   CategoryFrequencyPerDay,
   Covid,
@@ -18,16 +19,12 @@ export class StackedAreaChartComponent implements AfterViewInit {
   @Input() articlesData: DataEntry[] = [];
   @Input() covidData: Covid[] = [];
   public data: CategoryFrequencyPerDay[] = [];
+  public articleDataByDay: CategoryFrequencyPerDay[] = [];
+
 
   private margin = { top: 50, right: 230, bottom: 50, left: 50 };
-  private width = 600 - this.margin.left - this.margin.right;
-  private height = 400 - this.margin.top - this.margin.bottom;
-  private idleTimeout: any | null;
-  private x!: d3.ScaleLinear<number, number, never>;
-  private areaChart!: d3.Selection<SVGGElement, unknown, null, undefined>;
-  private brush!: d3.BrushBehavior<unknown>;
-  private xAxis!: d3.Selection<SVGGElement, unknown, null, undefined>;
-  private area!: d3.Area<[number, number]>;
+  private width = 800 - this.margin.left - this.margin.right;
+  private height = 700 - this.margin.top - this.margin.bottom;
   private keys = [
     'Arts_and_Entertainment',
     'Business',
@@ -49,11 +46,13 @@ export class StackedAreaChartComponent implements AfterViewInit {
     // eslint-disable-next-line no-unused-vars
     private readonly filter: FilterEventsService,
     private dataService: DataService
-  ) {}
+  ) {
+  }
 
   ngAfterViewInit(): void {
-    this.data = this.dataService.getArticleByDay(this.articlesData);
-    this.createChart();
+    this.articleDataByDay = this.dataService.getArticleByDay(this.articlesData);
+    this.data = this.getDataByWave('first');
+     this.createChart();
   }
 
   createChart() {
@@ -69,14 +68,15 @@ export class StackedAreaChartComponent implements AfterViewInit {
         'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
 
-    let color = d3.scaleOrdinal().domain(this.keys).range(d3.schemeSet2);
-    let stackedData = d3.stack().keys(this.keys)(this.data as any);
+    const color = d3.scaleOrdinal().domain(this.keys).range(d3.schemeSet2);
 
-    this.x = this.getXScale(this.data);
-    this.xAxis = svg
+    let stackedData = d3.stack().keys(this.keys)(this.data as any);
+  let x = this.getXScale(this.data)
+
+  let xAxis = svg
       .append('g')
       .attr('transform', 'translate(0,' + this.height + ')')
-      .call(d3.axisBottom(this.x).ticks(6));
+      .call(d3.axisBottom(x).ticks(6));
 
     svg
       .append('text')
@@ -84,85 +84,69 @@ export class StackedAreaChartComponent implements AfterViewInit {
       .attr('x', this.width)
       .attr('y', this.height + 40)
       .text('Time(Year)');
+
     svg
       .append('text')
       .attr('text-anchor', 'end')
       .attr('x', 0)
       .attr('y', -20)
-      .text('nombre de reportage')
+      .text('# nombre de reportage')
       .attr('text-anchor', 'start');
 
     const y = this.getYScale();
     svg.append('g').call(d3.axisLeft(y).ticks(5));
 
-    let clip = svg
-      .append('defs')
-      .append('svg:clipPath')
-      .attr('id', 'clip')
-      .append('svg:rect')
-      .attr('width', this.width)
-      .attr('height', this.height)
-      .attr('x', 0)
-      .attr('y', 0);
-
-    this.brush = d3
-      .brushX()
-      .extent([
-        [0, 0],
-        [this.width, this.height],
-      ])
-      .on('end', this.updateChart);
-
-    this.areaChart = svg.append('g').attr('clip:path', 'url(#clip)');
-
-    this.area = d3
+     let area = d3
       .area()
-      .x((d: any) => {
-        return this.x(d.data.date);
-      })
-      .y0((d) => {
-        return y(d[0]);
-      })
+      .x((d:any) => x(d.data.date))
       .y1((d) => {
         return y(d[1]);
-      });
-    this.areaChart
+      }).y0((d) => {
+        return y(d[0]);
+      })
+      .curve(d3.curveMonotoneX);
+      
+    svg
       .selectAll('mylayers')
       .data(stackedData)
       .enter()
       .append('path')
       .attr('class', (d) => {
-        return 'MyArea' + d.key;
+        return 'myArea ' + d.key;
       })
-      .style('fill', (d) => {
-        return color(d.key) as any;
-      })
-      .attr('d', this.area as any);
-    this.areaChart.append('g').attr('class', 'brush').call(this.brush);
+      .style('fill', (d: any) => {
+        return color(d) as any;
+      }).attr('stroke', (d:any)=>{
+        return color(d) as any;
+
+      }).attr('stroke-width', 2)
+      .attr('d', area as any);
 
     const size = 20;
+    
     svg
       .selectAll('myrect')
       .data(this.keys)
       .join('rect')
       .attr('x', 400)
-      .attr('y', (d, i) => {
+      .attr('y', (d: any, i:any) => {
         return 10 + i * (size + 5);
       })
       .attr('width', size)
       .attr('height', size)
-      .style('fill', (d) => {
+      .style('fill', (d: any) => {
         return color(d) as any;
       })
       .on('mouseover', this.highlight)
       .on('mouseleave', this.nonHighlight);
+
     svg
       .selectAll('mylabels')
       .data(this.keys)
       .join('text')
       .attr('x', 400 + size * 1.2)
       .attr('y', (d, i) => {
-        return 10 + i * (size + 5) + size / 2;
+        return 10 + i * (size + 5) + (size / 2);
       })
       .style('fill', (d) => {
         return color(d) as any;
@@ -178,7 +162,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
 
   getXScale(data: CategoryFrequencyPerDay[]) {
     return d3
-      .scaleLinear()
+      .scaleTime()
       .domain([
         d3.min(data, function (d: any) {
           return d.date;
@@ -194,41 +178,50 @@ export class StackedAreaChartComponent implements AfterViewInit {
     return d3.scaleLinear().domain([0, 500]).range([this.height, 0]);
   }
 
-  updateChart(event: any, d: any) {
-    const extent = event.selection;
-    if (!extent) {
-      if (!this.idleTimeout)
-        return (this.idleTimeout = setTimeout(this.idled, 350));
-      this.x.domain([
-        d3.min(this.data, function (d: any) {
-          return d.date;
-        }),
-        d3.max(this.data, function (d: any) {
-          return d.date;
-        }),
-      ]);
-    } else {
-      this.x.domain([this.x.invert(extent[0]), this.x.invert(extent[1])]);
-      this.areaChart.select('.brush').call(this.brush.move as any, null);
-    }
-    this.xAxis.transition().duration(1000).call(d3.axisBottom(this.x).ticks(5));
-    this.areaChart
-      .selectAll('path')
-      .transition()
-      .duration(1000)
-      .attr('d', this.area as any);
-    return;
-  }
 
   highlight(event: any, d: any) {
-    d3.selectAll('.myArea').style('opcaity', 0.1);
+    d3.selectAll('.myArea').style('opacity', 0.1);
     d3.select('.' + d).style('opacity', 1);
   }
   nonHighlight(event: any, d: any) {
-    d3.select('.myArea').style('opacity', 1);
+    d3.selectAll('.myArea').style('opacity', 1);
   }
 
-  idled() {
-    this.idleTimeout = null;
+  getDataByWave(wave: string): CategoryFrequencyPerDay[]{
+    let data = null;
+  switch(wave){
+    case "first":
+      data = this.articleDataByDay.filter(d=>{ 
+          return (d.date.getTime() <= firstWaveEndDate.getTime() && d.date.getTime() 
+         >= firstWaveStartDate.getTime())})
+    break;
+    case "second":
+      data = this.articleDataByDay.filter(d=>{ 
+        return (d.date.getTime() <= secondWaveEndDate.getTime() && d.date.getTime() 
+       >= secondWaveStartDate.getTime())})
+      break;
+      case "third":
+        data = this.articleDataByDay.filter(d=>{ 
+          return (d.date.getTime() <= thirdWaveEndDate.getTime() && d.date.getTime() 
+         >= thirdWaveStartDate.getTime())})
+        break;
+        case "fourth":
+          data = this.articleDataByDay.filter(d=>{ 
+            return (d.date.getTime() <= fourthWaveEndDate.getTime() && d.date.getTime() 
+           >= fourthWaveStartDate.getTime())})
+          break;
+          case "fifth":
+            data = this.articleDataByDay.filter(d=>{ 
+              return (d.date.getTime() <= fivethWaveEndDate.getTime() && d.date.getTime() 
+             >= fivethWaveStartDate.getTime())})
+            break;
+  case "six":
+    data = this.articleDataByDay.filter(d=>{ 
+      return (d.date.getTime() <= sixthWaveEndDate.getTime() && d.date.getTime() 
+     >= sixthWaveStartDate.getTime())})
+              break;
+}
+return data as CategoryFrequencyPerDay[]
   }
+
 }
