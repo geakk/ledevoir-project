@@ -1,7 +1,20 @@
 import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
 import * as d3 from 'd3';
-import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveEndDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from 'src/app/constants/themes';
+import {
+  firstWaveEndDate,
+  firstWaveStartDate,
+  fivethWaveEndDate,
+  fivethWaveStartDate,
+  fourthWaveEndDate,
+  fourthWaveStartDate,
+  secondWaveEndDate,
+  secondWaveStartDate,
+  sixthWaveEndDate,
+  sixthWaveStartDate,
+  thirdWaveEndDate,
+  thirdWaveStartDate,
+} from 'src/app/constants/themes';
 import {
   CategoryFrequencyPerDay,
   Covid,
@@ -24,7 +37,6 @@ export class StackedAreaChartComponent implements AfterViewInit {
 
   selected = 'Vague 1';
 
-
   private margin = { top: 50, right: 230, bottom: 50, left: 50 };
   private width = 800 - this.margin.left - this.margin.right;
   private height = 700 - this.margin.top - this.margin.bottom;
@@ -39,7 +51,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
     'Technology',
   ];
   public xScale: d3.AxisScale<Date> | undefined;
-public tooltip: any;
+  public tooltip: any;
   constructor(
     // eslint-disable-next-line no-unused-vars
     public chartElem: ElementRef,
@@ -49,16 +61,12 @@ public tooltip: any;
     // eslint-disable-next-line no-unused-vars
     private readonly filter: FilterEventsService,
     private dataService: DataService
-  ) {
-  }
+  ) {}
 
   ngAfterViewInit(): void {
     this.articleDataByDay = this.dataService.getArticleByDay(this.articlesData);
     this.data = this.getDataByWave('third');
-     this.createChart();
-       this.tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
+    this.createChart();
   }
 
   createChart() {
@@ -75,13 +83,17 @@ public tooltip: any;
         'transform',
         'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
-
+    this.tooltip = d3
+      .select('stacked-area-chart')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('opacity', 0);
     const color = d3.scaleOrdinal().domain(this.keys).range(d3.schemeSet2);
 
     let stackedData = d3.stack().keys(this.keys)(this.data as any);
-  let x = this.getXScale(this.data)
+    let x = this.getXScale(this.data);
 
-  let xAxis = svg
+    let xAxis = svg
       .append('g')
       .attr('transform', 'translate(0,' + this.height + ')')
       .call(d3.axisBottom(x).ticks(6));
@@ -104,16 +116,17 @@ public tooltip: any;
     const y = this.getYScale();
     svg.append('g').call(d3.axisLeft(y).ticks(5));
 
-     let area = d3
+    let area = d3
       .area()
-      .x((d:any) => x(d.data.date))
+      .x((d: any) => x(d.data.date))
       .y1((d) => {
         return y(d[1]);
-      }).y0((d) => {
+      })
+      .y0((d) => {
         return y(d[0]);
       })
       .curve(d3.curveMonotoneX);
-      
+
     svg
       .selectAll('mylayers')
       .data(stackedData)
@@ -124,22 +137,23 @@ public tooltip: any;
       })
       .style('fill', (d: any) => {
         return color(d) as any;
-      }).attr('stroke', (d:any)=>{
+      })
+      .attr('stroke', (d: any) => {
         return color(d) as any;
-
-      }).attr('stroke-width', 2)
+      })
+      .attr('stroke-width', 2)
       .attr('d', area as any)
       .on('mouseover', this.showTooltip)
-      .on('mouseleave', this.noShowTooltip);;
+      .on('mouseleave', this.noShowTooltip);
 
     const size = 20;
-    
+
     svg
       .selectAll('myrect')
       .data(this.keys)
       .join('rect')
       .attr('x', 400)
-      .attr('y', (d: any, i:any) => {
+      .attr('y', (_d: any, i: any) => {
         return 10 + i * (size + 5);
       })
       .attr('width', size)
@@ -155,8 +169,8 @@ public tooltip: any;
       .data(this.keys)
       .join('text')
       .attr('x', 400 + size * 1.2)
-      .attr('y', (d, i) => {
-        return 10 + i * (size + 5) + (size / 2);
+      .attr('y', (_d, i) => {
+        return 10 + i * (size + 5) + size / 2;
       })
       .style('fill', (d) => {
         return color(d) as any;
@@ -188,66 +202,89 @@ public tooltip: any;
     return d3.scaleLinear().domain([0, 500]).range([this.height, 0]);
   }
 
-
-  highlight(event: any, d: any) {
+  highlight(_event: any, d: any) {
     d3.selectAll('.myArea').style('opacity', 0.1);
     d3.select('.' + d).style('opacity', 1);
   }
-  nonHighlight(event: any, d: any) {
+  nonHighlight(_event: any, _d: any) {
     d3.selectAll('.myArea').style('opacity', 1);
   }
 
-  showTooltip(event: any, d: any){
-    this.tooltip.transition()
-               .duration(200)
-               .style("opacity", .9)
-               this.tooltip.html( "<br><strong><span style='color:white'>UserName:"+ d.User_ID +" </span><span style='color:white'></strong>")
-               .style("left", (event.pageX ) + "px")
-               .style("top", (event.pageY ) + "px");
-
+  showTooltip(event: any, d: any) {
+    this.tooltip.transition().duration(200).style('opacity', 0.9);
+    this.tooltip
+      .html(
+        `<div>date : <span class="tooltip-value">${d.date} </span></div>
+            <div> Articles de categorie Arts_and_Entertainment :  <span class="tooltip-value">${d.Arts_and_Entertainment}</span></div>
+    <div> Articles de categorie Business :  <span class="tooltip-value">${d.Business} </span></div>
+    <div> Articles de categorie Environment :  <span class="tooltip-value">${d.Environment} </span></div>
+    <div> Articles de categorie Health : <span class="tooltip-value">${d.Health} </span> </div>
+    <div> Articles de categorie Politics :  <span class="tooltip-value">${d.Politics} </span></div>
+    <div> Articles de categorie Science :  <span class="tooltip-value">${d.Science} </span></div>
+    <div> Articles de categorie Sports :  <span class="tooltip-value">${d.Sports} </span></div>
+    <div> Articles de categorieTechnology :  <span class="tooltip-value">${d.Science} </span></div>`
+      )
+      .style('left', event.pageX + 'px')
+      .style('top', event.pageY + 'px');
   }
 
-  noShowTooltip(event: any, d: any){
-    this.tooltip.transition()
-    .duration(500)
-    .style("opacity", 0);
+  noShowTooltip(_event: any, _d: any) {
+    this.tooltip.transition().duration(500).style('opacity', 0);
   }
 
-  getDataByWave(wave: string): CategoryFrequencyPerDay[]{
+  getDataByWave(wave: string): CategoryFrequencyPerDay[] {
     let data = null;
-  switch(wave){
-    case "first":
-      data = this.articleDataByDay.filter(d=>{ 
-          return (d.date.getTime() <= firstWaveEndDate.getTime() && d.date.getTime() 
-         >= firstWaveStartDate.getTime())})
-    break;
-    case "second":
-      data = this.articleDataByDay.filter(d=>{ 
-        return (d.date.getTime() <= secondWaveEndDate.getTime() && d.date.getTime() 
-       >= secondWaveStartDate.getTime())})
-      break;
-      case "third":
-        data = this.articleDataByDay.filter(d=>{ 
-          return (d.date.getTime() <= thirdWaveEndDate.getTime() && d.date.getTime() 
-         >= thirdWaveStartDate.getTime())})
+    switch (wave) {
+      case 'first':
+        data = this.articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= firstWaveEndDate.getTime() &&
+            d.date.getTime() >= firstWaveStartDate.getTime()
+          );
+        });
         break;
-        case "fourth":
-          data = this.articleDataByDay.filter(d=>{ 
-            return (d.date.getTime() <= fourthWaveEndDate.getTime() && d.date.getTime() 
-           >= fourthWaveStartDate.getTime())})
-          break;
-          case "fifth":
-            data = this.articleDataByDay.filter(d=>{ 
-              return (d.date.getTime() <= fivethWaveEndDate.getTime() && d.date.getTime() 
-             >= fivethWaveStartDate.getTime())})
-            break;
-  case "six":
-    data = this.articleDataByDay.filter(d=>{ 
-      return (d.date.getTime() <= sixthWaveEndDate.getTime() && d.date.getTime() 
-     >= sixthWaveStartDate.getTime())})
-              break;
-}
-return data as CategoryFrequencyPerDay[]
+      case 'second':
+        data = this.articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= secondWaveEndDate.getTime() &&
+            d.date.getTime() >= secondWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'third':
+        data = this.articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= thirdWaveEndDate.getTime() &&
+            d.date.getTime() >= thirdWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'fourth':
+        data = this.articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= fourthWaveEndDate.getTime() &&
+            d.date.getTime() >= fourthWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'fifth':
+        data = this.articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= fivethWaveEndDate.getTime() &&
+            d.date.getTime() >= fivethWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'six':
+        data = this.articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= sixthWaveEndDate.getTime() &&
+            d.date.getTime() >= sixthWaveStartDate.getTime()
+          );
+        });
+        break;
+    }
+    return data as CategoryFrequencyPerDay[];
   }
 
   updateData(event: MatSelectChange): void {
