@@ -2,7 +2,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as d3 from 'd3';
-import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from '../constants/themes';
+import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveEndDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from '../constants/themes';
 
 import {
   CategoryFrequencyPerDay,
@@ -441,5 +441,60 @@ export class DataService {
     else {
       return categorie[0].uri;
     }
+  }
+
+  getDataByWave(wave: string, articleDataByDay: CategoryFrequencyPerDay[]): CategoryFrequencyPerDay[] {
+    let data: CategoryFrequencyPerDay[] = [];
+    switch (wave) {
+      case 'first':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= firstWaveEndDate.getTime() &&
+            d.date.getTime() >= firstWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'second':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= secondWaveEndDate.getTime() &&
+            d.date.getTime() >= secondWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'third':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= thirdWaveEndDate.getTime() &&
+            d.date.getTime() >= thirdWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'fourth':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= fourthWaveEndDate.getTime() &&
+            d.date.getTime() >= fourthWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'fifth':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= fivethWaveEndDate.getTime() &&
+            d.date.getTime() >= fivethWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'six':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= sixthWaveEndDate.getTime() &&
+            d.date.getTime() >= sixthWaveStartDate.getTime()
+          );
+        });
+        break;
+    }
+    return data;
   }
 }

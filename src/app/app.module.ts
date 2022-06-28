@@ -10,7 +10,6 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { FormsModule } from '@angular/forms';
-import { GeneralViewComponent } from './components/general-view/general-view.component';
 import { HttpClientModule } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { StakesViewComponent } from './components/stakes-view/stakes-view.component';
@@ -28,7 +27,6 @@ const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
   declarations: [
     AppComponent,
     DashboardComponent,
-    GeneralViewComponent,
     StakesViewComponent,
     LineChartComponent,
     BarChartComponent,

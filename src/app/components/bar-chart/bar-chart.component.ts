@@ -7,7 +7,6 @@ import {
   OnInit,
   ViewChild,
 } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { MatSelectChange } from '@angular/material/select';
 
 import * as d3 from 'd3';
