@@ -18,9 +18,6 @@
                 <mat-menu #themeMenu="matMenu" xPosition="before" class="theme-picker-menu">
                     <button mat-menu-item class="mat-menu-item" *ngFor="let theme of themeService.themes" (click)="themeService.selectTheme(theme.name)">
             <mat-icon
-              [ngClass]="{
-                'theme-selected-icon': themeService.currentTheme === theme
-              }"
               [color]="
                 themeService.currentTheme === theme ? 'accent' : undefined
               "

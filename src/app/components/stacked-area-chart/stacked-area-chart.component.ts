@@ -22,8 +22,6 @@ import {
   DataEntry,
 } from '../../interfaces/data-entry.interface';
 import { DataService } from '../../services/data.service';
-import { FilterEventsService } from '../../services/filter-events.service';
-import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-stacked-area-chart',
@@ -53,13 +51,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
   ];
   public xScale: d3.AxisScale<Date> | undefined;
   constructor(
-    // eslint-disable-next-line no-unused-vars
     public chartElem: ElementRef,
-    private readonly host: ElementRef,
-    // eslint-disable-next-line no-unused-vars
-    private readonly theme: ThemeService,
-    // eslint-disable-next-line no-unused-vars
-    private readonly filter: FilterEventsService,
     private dataService: DataService
   ) {}
 
@@ -88,14 +80,14 @@ export class StackedAreaChartComponent implements AfterViewInit {
 
     let xAxis = svg
       .append('g')
-      .attr('transform', 'translate(0,' + this.height + ')')
+      .attr('transform', 'translate('+this.margin.left +',' + (this.height+this.margin.top) + ')')
       .call(d3.axisBottom(x).ticks(6));
 
     svg
       .append('text')
       .attr('text-anchor', 'end')
       .attr('x', this.width)
-      .attr('y', this.height + 40)
+      .attr('y', this.height )
       .text('Time(Year)');
 
     svg
@@ -107,7 +99,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
       .attr('text-anchor', 'start');
 
     const y = this.getYScale();
-    svg.append('g').attr('transform', 'translate(' + this.width + ', 0)')
+    svg.append('g').attr('transform', 'translate(' + this.margin.left + ','+ this.margin.top+ ')')
     .call(d3.axisLeft(y).ticks(5));
 
     let area = d3
@@ -137,6 +129,8 @@ export class StackedAreaChartComponent implements AfterViewInit {
       })
       .attr('stroke-width', 2)
       .attr('d', area as any)
+      .attr('transform', 'translate('+ this.margin.left + ',' +this.margin.top + ')')
+
       
 
     const size = 20;

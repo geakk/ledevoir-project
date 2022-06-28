@@ -7,19 +7,14 @@ import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStar
 import {
   CategoryFrequencyPerDay,
   Covid,
-  CovidJsonObject,
   DataEntry,
-  DataJsonObject,
 } from '../interfaces/data-entry.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
-  static covidDataStorageKey = 'covidDataKey'
   constructor(
-    // eslint-disable-next-line no-unused-vars
-    private readonly http: HttpClient
   ) {}
 
   async loadData(): Promise<DataEntry[]> {
@@ -391,7 +386,7 @@ export class DataService {
     const objectArray: CategoryFrequencyPerDay[] = [];
     for (const value of dataArray) {
       const newArray = objectArray.find(
-        (e) => e.date.toDateString() === value.date.toDateString()
+        (e) => e.date.getTime() === value.date.getTime()
       );
 
       if (newArray) {
@@ -445,34 +440,6 @@ export class DataService {
     if (categorie === null || categorie.length == 0) return 'Inconnu';
     else {
       return categorie[0].uri;
-    }
-  }
-
-  static storageKey = 'ledevoir-theme';
-
-  storeData(covidData: Covid[]) {
-    try {
-      window.localStorage[DataService.covidDataStorageKey] = JSON.stringify(covidData);
-
-    } catch {
-      console.error('Unable to set theme in local storage');
-    }
-  }
-
-  getCovidStoredData(): string | null {
-    try {
-      return window.localStorage[DataService.covidDataStorageKey] || null;
-    } catch {
-      return null;
-    }
-  }
-
-  clearStorage() {
-    try {
-      window.localStorage.removeItem(DataService.covidDataStorageKey);
-
-    } catch {
-      console.error('Unable to remove theme from local storage');
     }
   }
 }

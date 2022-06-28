@@ -12,8 +12,6 @@ import {
   MinMax,
   ViewStudentData,
 } from 'src/app/interfaces/general-view.interface';
-import { FilterEventsService } from 'src/app/services/filter-events.service';
-import { ThemeService } from 'src/app/services/theme.service';
 
 // This visualisation is based on : https://codepen.io/borntofrappe/pen/QXNvjx
 
