@@ -2,24 +2,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import * as d3 from 'd3';
-import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from '../constants/themes';
+import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveEndDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from '../constants/themes';
 
 import {
   CategoryFrequencyPerDay,
   Covid,
-  CovidJsonObject,
   DataEntry,
-  DataJsonObject,
 } from '../interfaces/data-entry.interface';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
-  static covidDataStorageKey = 'covidDataKey'
   constructor(
-    // eslint-disable-next-line no-unused-vars
-    private readonly http: HttpClient
   ) {}
 
   async loadData(): Promise<DataEntry[]> {
@@ -391,7 +386,7 @@ export class DataService {
     const objectArray: CategoryFrequencyPerDay[] = [];
     for (const value of dataArray) {
       const newArray = objectArray.find(
-        (e) => e.date.toDateString() === value.date.toDateString()
+        (e) => e.date.getTime() === value.date.getTime()
       );
 
       if (newArray) {
@@ -448,31 +443,58 @@ export class DataService {
     }
   }
 
-  static storageKey = 'ledevoir-theme';
-
-  storeData(covidData: Covid[]) {
-    try {
-      window.localStorage[DataService.covidDataStorageKey] = JSON.stringify(covidData);
-
-    } catch {
-      console.error('Unable to set theme in local storage');
+  getDataByWave(wave: string, articleDataByDay: CategoryFrequencyPerDay[]): CategoryFrequencyPerDay[] {
+    let data: CategoryFrequencyPerDay[] = [];
+    switch (wave) {
+      case 'first':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= firstWaveEndDate.getTime() &&
+            d.date.getTime() >= firstWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'second':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= secondWaveEndDate.getTime() &&
+            d.date.getTime() >= secondWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'third':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= thirdWaveEndDate.getTime() &&
+            d.date.getTime() >= thirdWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'fourth':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= fourthWaveEndDate.getTime() &&
+            d.date.getTime() >= fourthWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'fifth':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= fivethWaveEndDate.getTime() &&
+            d.date.getTime() >= fivethWaveStartDate.getTime()
+          );
+        });
+        break;
+      case 'six':
+        data = articleDataByDay.filter((d) => {
+          return (
+            d.date.getTime() <= sixthWaveEndDate.getTime() &&
+            d.date.getTime() >= sixthWaveStartDate.getTime()
+          );
+        });
+        break;
     }
-  }
-
-  getCovidStoredData(): string | null {
-    try {
-      return window.localStorage[DataService.covidDataStorageKey] || null;
-    } catch {
-      return null;
-    }
-  }
-
-  clearStorage() {
-    try {
-      window.localStorage.removeItem(DataService.covidDataStorageKey);
-
-    } catch {
-      console.error('Unable to remove theme from local storage');
-    }
+    return data;
   }
 }

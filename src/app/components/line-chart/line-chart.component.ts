@@ -8,7 +8,6 @@ import {
 import * as d3 from 'd3';
 import { Covid, DataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
-import { FilterEventsService } from 'src/app/services/filter-events.service';
 import { ThemeService } from 'src/app/services/theme.service';
 
 // This visualisation is based on : https://codepen.io/borntofrappe/pen/QXNvjx
@@ -45,11 +44,6 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
   constructor(
     // eslint-disable-next-line no-unused-vars
     public chartElem: ElementRef,
-    private readonly host: ElementRef,
-    // eslint-disable-next-line no-unused-vars
-    private readonly theme: ThemeService,
-    // eslint-disable-next-line no-unused-vars
-    private readonly filter: FilterEventsService,
     private dataService: DataService
   ) {}
 

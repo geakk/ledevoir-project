@@ -5,8 +5,8 @@ import { MatIconRegistry } from '@angular/material/icon';
 import { MatDrawer } from '@angular/material/sidenav';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Covid, DataEntry } from 'src/app/interfaces/data-entry.interface';
+import { CovidDataStorageService } from 'src/app/services/covid-data-storage.service';
 import { DataService } from 'src/app/services/data.service';
-import { FilterEventsService } from 'src/app/services/filter-events.service';
 import { ThemeService } from 'src/app/services/theme.service';
 
 interface Option {
@@ -46,14 +46,9 @@ export class AppComponent implements OnInit {
   constructor(
     // eslint-disable-next-line no-unused-vars
     private readonly dataService: DataService,
-    // eslint-disable-next-line no-unused-vars
-    private readonly matIconRegistry: MatIconRegistry,
-    // eslint-disable-next-line no-unused-vars
-    private readonly sanitizer: DomSanitizer,
+    private readonly covidStorageService: CovidDataStorageService,
     // eslint-disable-next-line no-unused-vars
     public readonly themeService: ThemeService,
-    // eslint-disable-next-line no-unused-vars
-    private readonly filterEventService: FilterEventsService,
     // eslint-disable-next-line no-unused-vars
     public readonly cdr: ChangeDetectorRef
   ) {
@@ -66,10 +61,10 @@ export class AppComponent implements OnInit {
     this.isLoading = false;
 
     });
-    const covid = this.dataService.getCovidStoredData();
+    const covid = this.covidStorageService.getCovidStoredData();
     if(!covid){
       this.covidData = await this.dataService.loadCovidData();
-      this.dataService.storeData(this.covidData);
+      this.covidStorageService.storeData(this.covidData);
 
     }
     else{

@@ -1,14 +1,8 @@
 
-.tooltip{
-    line-height: 1;
-    font-weight: bold;
-    padding: 12px;
-    background: rgba(54,32,35,0.8);
-    color: #fff;
-    border-radius: 2px;
-    pointer-events: none;
+.stacked-area-option-container{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
-.tooltip-value{
-    font-weight: normal;
-}
+
