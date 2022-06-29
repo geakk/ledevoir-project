@@ -8,7 +8,6 @@ import {
 import * as d3 from 'd3';
 import { Covid, DataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
-import { ThemeService } from 'src/app/services/theme.service';
 
 // This visualisation is based on : https://codepen.io/borntofrappe/pen/QXNvjx
 
@@ -26,10 +25,10 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
   public lineGroupCovid:
     | d3.Selection<SVGPathElement, unknown, null, undefined>
     | undefined;
-    private margin = { top: 50, right: 230, bottom: 50, left: 50 };
-    private width = 800 - this.margin.left - this.margin.right;
-    private height = 700 - this.margin.top - this.margin.bottom;
+  private margin = { top: 40, right: 0, bottom: 0, left: 70 };
   
+  private width = 800 - this.margin.left - this.margin.right;
+  private height = 700 - this.margin.top - this.margin.bottom;
 
   public svg: d3.Selection<SVGSVGElement, unknown, null, undefined> | undefined;
   public svgInner:
@@ -82,23 +81,23 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
       .append('g')
       .style(
         'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top + ')'
+        'translate(' + this.margin.left + ',' + this.margin.top  + ')'
       );
 
     this.yScale = d3
       .scaleLinear()
       .domain([Math.max(...casCovid) + 1, Math.min(...casCovid) - 1])
-      .range([0, this.height - 2 * this.margin.left]);
+      .range([this.margin.top, this.height - 2 * this.margin.top]);
 
     this.yAxis = this.svgInner
       .append('g')
       .attr('id', 'y-axis')
-      .style('transform', 'translate(' + this.margin + 'px,  0)');
+      .style('transform', 'translate(' + this.margin.left + 'px,  0)');
 
     this.xScale = d3
       .scaleTime()
       .domain([minDate, maxDate])
-      .range([this.margin.top, this.width - 2 * this.margin.top]);
+      .range([this.margin.left, this.width - 2 * this.margin.right]);
 
     this.xAxis = this.svgInner
       .append('g')
@@ -171,35 +170,61 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
     this.lineGroup!.attr('d', line(points));
     this.lineGroupCovid!.attr('d', line(pointsCovid));
 
-    this.svgInner!.append('text')
-      .attr('x', this.width / 4)
-      .attr('y', 0 - this.margin.top / 2)
+    this.addTitle();
+    this.addLegend();
+    this.addLabels();
+  }
+
+  private addTitle(){
+    this.svg!.append('text')
+      .attr('x', this.width / 2)
+      .attr('y', 15)
       .attr('text-anchor', 'middle')
       .style('font-size', '16px')
       .style('text-decoration', 'underline')
       .text(
         "Nombre d'articles portant sur la COVID/ Nombre de cas de COVID par jour"
       );
+  }
+  private addLabels(){
+    this.svgInner!.append("text")
+    .attr("class", "x label")
+    .attr("text-anchor", "end")
+    .attr("x", this.width/2)
+    .attr("y", this.height - this.margin.top)
+    .text("Date");
+    this.addLegend();
 
+    this.svgInner!.append("text")
+    .attr("class", "y label")
+    .attr("text-anchor", "end")
+    .attr("x", -200)
+    .attr("y", 6)
+    .attr("dy", ".75em")
+    .attr("transform", "rotate(-90)")
+    .text("Nombres d'articles / Nombre de cas");
+  }
+
+  private addLegend() {
     this.svgInner!.append('circle')
-      .attr('cx', 200)
-      .attr('cy', 130)
+      .attr('cx', 100)
+      .attr('cy', 60)
       .attr('r', 6)
       .style('fill', 'red');
     this.svgInner!.append('circle')
-      .attr('cx', 200)
-      .attr('cy', 160)
+      .attr('cx', 100)
+      .attr('cy', 90)
       .attr('r', 6)
       .style('fill', 'blue');
     this.svgInner!.append('text')
-      .attr('x', 220)
-      .attr('y', 130)
+      .attr('x', 120)
+      .attr('y', 60)
       .text("Nombre d'articles")
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
-      .attr('x', 220)
-      .attr('y', 160)
+      .attr('x', 120)
+      .attr('y', 90)
       .text('Cas de Covid')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
