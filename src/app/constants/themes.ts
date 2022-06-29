@@ -4,7 +4,7 @@ export const THEMES: Theme[] = [
   {
     primary: '#673AB7',
     accent: '#FFC107',
-    displayName: 'Deep Purple & Amber',
+    displayName: 'Violet Foncé (Mode Clair)',
     name: 'deeppurple-amber',
     cssSelector: 'deeppurple-amber-theme',
     isDark: false,
@@ -12,7 +12,7 @@ export const THEMES: Theme[] = [
   {
     primary: '#3F51B5',
     accent: '#E91E63',
-    displayName: 'Indigo & Pink',
+    displayName: 'Indigo (Mode Clair)',
     name: 'indigo-pink',
     cssSelector: 'indigo-pink-theme',
     isDark: false,
@@ -21,7 +21,7 @@ export const THEMES: Theme[] = [
   {
     primary: '#E91E63',
     accent: '#607D8B',
-    displayName: 'Pink & Blue-grey',
+    displayName: 'Rose (Mode Sombre)',
     name: 'pink-bluegrey',
     cssSelector: 'pink-bluegrey-theme',
     isDark: true,
@@ -29,7 +29,7 @@ export const THEMES: Theme[] = [
   {
     primary: '#9C27B0',
     accent: '#4CAF50',
-    displayName: 'Purple & Green',
+    displayName: 'Violet (Mode Sombre)',
     name: 'purple-green',
     cssSelector: 'purple-green-theme',
     isDark: true,

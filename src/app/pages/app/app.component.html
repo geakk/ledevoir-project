@@ -1,44 +1,51 @@
 <main [ngClass]="themeService.currentTheme!.cssSelector">
-    <div *ngIf="isLoading" class="loading-view mat-drawer-container">
-        <div class="loading-view-progress-bar">
-            <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
-            <p class="loading-view-progress-bar-helptext">
-                Loading data. Please wait ...
-            </p>
-        </div>
+  <div *ngIf="isLoading" class="loading-view mat-drawer-container">
+    <div class="loading-view-progress-bar">
+      <mat-progress-bar mode="indeterminate" color="primary"></mat-progress-bar>
+      <p class="loading-view-progress-bar-helptext">
+        Chargement des données. Veuillez patienter ...
+      </p>
     </div>
-    <mat-drawer-container *ngIf="!isLoading" [hasBackdrop]="false" [@.disabled]="false">
+  </div>
+
+  <mat-drawer-container *ngIf="!isLoading" [hasBackdrop]="false" [@.disabled]="false">
+    <mat-drawer-content>
+      <perfect-scrollbar>
         <div class="navbar mat-elevation-z2">
-            <mat-toolbar color="primary">
-                <span>Le devoir lors de la Covid-19</span>
-                <div class="flex-spacer"></div>
-                <button mat-icon-button [mat-menu-trigger-for]="themeMenu" aria-label="Choisir un thème" matTooltip="Choisir un thème" id="introjs-change-theme">
-          <mat-icon>format_color_fill</mat-icon>
-        </button>
-                <mat-menu #themeMenu="matMenu" xPosition="before" class="theme-picker-menu">
-                    <button mat-menu-item class="mat-menu-item" *ngFor="let theme of themeService.themes" (click)="themeService.selectTheme(theme.name)">
-            <mat-icon
-              [color]="
+          <mat-toolbar color="primary">
+            <img src="../../../assets/Logo_Le_Devoir.png" alt="logo" width="200" height="42">
+            <div class="flex-spacer"></div>
+            <button mat-icon-button [mat-menu-trigger-for]="themeMenu" aria-label="Choisir un thème"
+              matTooltip="Choisir un thème" id="introjs-change-theme">
+              <mat-icon>format_color_fill</mat-icon>
+            </button>
+            <mat-menu #themeMenu="matMenu" xPosition="before" class="theme-picker-menu">
+              <button mat-menu-item class="mat-menu-item" *ngFor="let theme of themeService.themes"
+                (click)="themeService.selectTheme(theme.name)">
+                <mat-icon [color]="
                 themeService.currentTheme === theme ? 'accent' : undefined
-              "
-            >
-              {{
-                themeService.currentTheme === theme
+              ">
+                  {{
+                  themeService.currentTheme === theme
                   ? "radio_button_checked"
                   : "radio_button_unchecked"
-              }}
-            </mat-icon>
-            <span>{{ theme.displayName }}</span>
-            <mat-icon
-              [class]="theme.name"
-            ></mat-icon>
-          </button>
-                </mat-menu>
-            </mat-toolbar>
+                  }}
+                </mat-icon>
+                <span>{{ theme.displayName }}</span>
+                <mat-icon [class]="theme.name"></mat-icon>
+              </button>
+            </mat-menu>
+          </mat-toolbar>
         </div>
 
         <div class="visualisations">
-            <app-dashboard [articlesData]="articlesData" [covidData]="covidData"></app-dashboard>
+          <app-dashboard [articlesData]="articlesData" [covidData]="covidData"></app-dashboard>
         </div>
-    </mat-drawer-container>
+
+        <mat-toolbar class="footer" color="primary">
+          <small>© Le Devoir. Tous droits réservés.</small>
+        </mat-toolbar>
+      </perfect-scrollbar>
+    </mat-drawer-content>
+  </mat-drawer-container>
 </main>
