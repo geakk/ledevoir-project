@@ -95,17 +95,18 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
 
     this.yScale = d3
       .scaleLinear()
-      .domain([20000, 0])
+      .domain([12000, 0])
       .range([0, this.height - 2 * this.margin.left]);
 
     this.yAxis = this.svgInner
       .append('g')
       .attr('id', 'y-axis')
-      .style('transform', 'translate(' + this.margin.left +  'px,  0)');
+      .style('transform', 'translate(' + this.margin.left + 'px,  0)');
 
     this.xScale = d3
       .scaleLinear()
-      .domain([0, 6])
+      // .call(d3.axisBottom(this.xScale).ticks(5))
+      .domain([1, 5])
       .range([this.margin.top, this.width - 2 * this.margin.top]);
 
     this.xAxis = this.svgInner
@@ -198,7 +199,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
       .y((d) => d[1])
       .curve(d3.curveMonotoneX);
 
-    let dates = [1, 2, 3, 4, 5, 6];
+    let dates = [1, 2, 3, 4, 5];
 
     const artsPoints: [number, number][] = [];
     const businessPoints: [number, number][] = [];
@@ -232,10 +233,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
           currentSubjectFrequency =
             this.data['news/Arts_and_Entertainment'].fivethWave;
           break;
-        case 5:
-          currentSubjectFrequency =
-            this.data['news/Arts_and_Entertainment'].sixthWave;
-          break;
         default:
           break;
       }
@@ -262,9 +259,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
           break;
         case 4:
           currentSubjectFrequency = this.data['news/Business'].fivethWave;
-          break;
-        case 5:
-          currentSubjectFrequency = this.data['news/Business'].sixthWave;
           break;
         default:
           break;
@@ -293,9 +287,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
         case 4:
           currentSubjectFrequency = this.data['news/Environment'].fivethWave;
           break;
-        case 5:
-          currentSubjectFrequency = this.data['news/Environment'].sixthWave;
-          break;
         default:
           break;
       }
@@ -322,9 +313,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
           break;
         case 4:
           currentSubjectFrequency = this.data['news/Health'].fivethWave;
-          break;
-        case 5:
-          currentSubjectFrequency = this.data['news/Health'].sixthWave;
           break;
         default:
           break;
@@ -353,9 +341,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
         case 4:
           currentSubjectFrequency = this.data['news/Politics'].fivethWave;
           break;
-        case 5:
-          currentSubjectFrequency = this.data['news/Politics'].sixthWave;
-          break;
         default:
           break;
       }
@@ -382,9 +367,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
           break;
         case 4:
           currentSubjectFrequency = this.data['news/Science'].fivethWave;
-          break;
-        case 5:
-          currentSubjectFrequency = this.data['news/Science'].sixthWave;
           break;
         default:
           break;
@@ -413,9 +395,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
         case 4:
           currentSubjectFrequency = this.data['news/Sports'].fivethWave;
           break;
-        case 5:
-          currentSubjectFrequency = this.data['news/Sports'].sixthWave;
-          break;
         default:
           break;
       }
@@ -443,9 +422,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
         case 4:
           currentSubjectFrequency = this.data['news/Technology'].fivethWave;
           break;
-        case 5:
-          currentSubjectFrequency = this.data['news/Technology'].sixthWave;
-          break;
         default:
           break;
       }
@@ -454,15 +430,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
         this.yScale!(currentSubjectFrequency) as number,
       ]);
     }
-    // console.log(this.data);
-    // console.log('arts: ' + artsPoints);
-    // console.log('business: ' + businessPoints);
-    // console.log('environment: ' + environmentPoints);
-    // console.log('health: ' + healthPoints);
-    // console.log('politics: ' + politicsPoints);
-    // console.log('science: ' + sciencePoints);
-    // console.log('sports: ' + sportsPoints);
-    // console.log('technology: ' + technologyPoints);
+
     this.arts_and_entertainment!.attr('d', line(artsPoints));
     this.business!.attr('d', line(businessPoints));
     this.environment!.attr('d', line(environmentPoints));

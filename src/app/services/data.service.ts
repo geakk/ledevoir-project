@@ -70,7 +70,6 @@ export class DataService {
         thirdWave: 0,
         fourthWave: 0,
         fivethWave: 0,
-        sixthWave: 0,
       },
       'news/Business': {
         firstWave: 0,
@@ -78,7 +77,6 @@ export class DataService {
         thirdWave: 0,
         fourthWave: 0,
         fivethWave: 0,
-        sixthWave: 0,
       },
       'news/Arts_and_Entertainment': {
         firstWave: 0,
@@ -86,7 +84,6 @@ export class DataService {
         thirdWave: 0,
         fourthWave: 0,
         fivethWave: 0,
-        sixthWave: 0,
       },
       'news/Health': {
         firstWave: 0,
@@ -94,7 +91,6 @@ export class DataService {
         thirdWave: 0,
         fourthWave: 0,
         fivethWave: 0,
-        sixthWave: 0,
       },
       'news/Technology': {
         firstWave: 0,
@@ -102,7 +98,6 @@ export class DataService {
         thirdWave: 0,
         fourthWave: 0,
         fivethWave: 0,
-        sixthWave: 0,
       },
       'news/Science': {
         firstWave: 0,
@@ -110,7 +105,6 @@ export class DataService {
         thirdWave: 0,
         fourthWave: 0,
         fivethWave: 0,
-        sixthWave: 0,
       },
       'news/Sports': {
         firstWave: 0,
@@ -118,7 +112,6 @@ export class DataService {
         thirdWave: 0,
         fourthWave: 0,
         fivethWave: 0,
-        sixthWave: 0,
       },
       'news/Environment': {
         firstWave: 0,
@@ -126,7 +119,6 @@ export class DataService {
         thirdWave: 0,
         fourthWave: 0,
         fivethWave: 0,
-        sixthWave: 0,
       },
     };
 
@@ -327,44 +319,6 @@ export class DataService {
               break;
             case 'news/Environment':
               categoriesCount['news/Environment'].fivethWave++;
-              break;
-            default:
-              break;
-          }
-        }
-      } catch (error) {
-        // console.log('ERROR')
-      }
-    }
-
-    for (let i = 0; i < data.length; i++) {
-      try {
-        if (data[i].date >= sixthWaveStartDate) {
-          let currentCategory = data[i].categories[0].uri;
-          switch (currentCategory) {
-            case 'news/Politics':
-              categoriesCount['news/Politics'].sixthWave++;
-              break;
-            case 'news/Business':
-              categoriesCount['news/Business'].sixthWave++;
-              break;
-            case 'news/Arts_and_Entertainment':
-              categoriesCount['news/Arts_and_Entertainment'].sixthWave++;
-              break;
-            case 'news/Health':
-              categoriesCount['news/Health'].sixthWave++;
-              break;
-            case 'news/Technology':
-              categoriesCount['news/Technology'].sixthWave++;
-              break;
-            case 'news/Science':
-              categoriesCount['news/Science'].sixthWave++;
-              break;
-            case 'news/Sports':
-              categoriesCount['news/Sports'].sixthWave++;
-              break;
-            case 'news/Environment':
-              categoriesCount['news/Environment'].sixthWave++;
               break;
             default:
               break;
