@@ -1,7 +1,5 @@
 import * as d3 from 'd3';
-
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
-
 import { MatSelectChange } from '@angular/material/select';
 import { WordData } from 'src/app/interfaces/data-entry.interface';
 
