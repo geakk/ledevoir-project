@@ -1,3 +1,7 @@
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable no-unused-vars */
+import * as d3 from 'd3';
+
 import {
   AfterViewInit,
   Component,
@@ -5,10 +9,9 @@ import {
   Input,
   OnChanges,
 } from '@angular/core';
-import * as d3 from 'd3';
+
 import { DataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
-import { ThemeService } from 'src/app/services/theme.service';
 
 @Component({
   selector: 'app-subjects-frequency',
@@ -56,11 +59,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   public yAxis: d3.Selection<SVGGElement, unknown, null, undefined> | undefined;
   articlesDataByDate = {};
   public data: any;
-  constructor(
-    // eslint-disable-next-line no-unused-vars
-    public chartElem: ElementRef,
-    private dataService: DataService
-  ) {}
+  constructor(public chartElem: ElementRef, private dataService: DataService) {}
 
   ngAfterViewInit(): void {
     this.data = this.dataService.getCategoryOccurence(this.articlesData);
@@ -69,9 +68,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   }
 
   public ngOnChanges(changes: { hasOwnProperty: (args: any) => any }): void {
-    // eslint-disable-next-line no-prototype-builtins
     if (changes.hasOwnProperty('data') && this.data) {
-      // console.log(this.data);
       this.initializeChart();
       this.drawChart();
 

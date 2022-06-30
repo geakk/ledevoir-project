@@ -1,30 +1,41 @@
-/* eslint-disable prettier/prettier */
-import { HttpClient } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+/* eslint-disable no-empty */
 import * as d3 from 'd3';
-import { firstWaveEndDate, firstWaveStartDate, fivethWaveEndDate, fivethWaveStartDate, fourthWaveEndDate, fourthWaveStartDate, secondWaveEndDate, secondWaveStartDate, sixthWaveEndDate, sixthWaveStartDate, thirdWaveEndDate, thirdWaveStartDate } from '../constants/themes';
 
 import {
   CategoryFrequencyPerDay,
   Covid,
   DataEntry,
 } from '../interfaces/data-entry.interface';
+import {
+  firstWaveEndDate,
+  firstWaveStartDate,
+  fivethWaveEndDate,
+  fivethWaveStartDate,
+  fourthWaveEndDate,
+  fourthWaveStartDate,
+  secondWaveEndDate,
+  secondWaveStartDate,
+  sixthWaveEndDate,
+  sixthWaveStartDate,
+  thirdWaveEndDate,
+  thirdWaveStartDate,
+} from '../constants/themes';
+
+import { Injectable } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
 })
 export class DataService {
-  constructor(
-  ) {}
+  constructor() {}
 
   async loadData(): Promise<DataEntry[]> {
-    const data = await  d3.json
-      ('/assets/articles_covid.json');
+    const data = await d3.json('/assets/articles_covid.json');
     return this.parseData((data as any).data);
   }
 
   async loadCovidData(): Promise<Covid[]> {
-    const data = (await d3.json('/assets/cas_covid.json'));
+    const data = await d3.json('/assets/cas_covid.json');
     return this.parseCovidData((data as any).data);
   }
 
@@ -122,8 +133,6 @@ export class DataService {
       },
     };
 
-
-
     for (let i = 0; i < data.length; i++) {
       try {
         if (
@@ -160,9 +169,7 @@ export class DataService {
               break;
           }
         }
-      } catch (error) {
-        // console.log('ERROR')
-      }
+      } catch (error) {}
     }
 
     for (let i = 0; i < data.length; i++) {
@@ -201,9 +208,7 @@ export class DataService {
               break;
           }
         }
-      } catch (error) {
-        // console.log('ERROR')
-      }
+      } catch (error) {}
     }
 
     for (let i = 0; i < data.length; i++) {
@@ -242,9 +247,7 @@ export class DataService {
               break;
           }
         }
-      } catch (error) {
-        // console.log('ERROR')
-      }
+      } catch (error) {}
     }
 
     for (let i = 0; i < data.length; i++) {
@@ -283,9 +286,7 @@ export class DataService {
               break;
           }
         }
-      } catch (error) {
-        // console.log('ERROR')
-      }
+      } catch (error) {}
     }
 
     for (let i = 0; i < data.length; i++) {
@@ -324,15 +325,12 @@ export class DataService {
               break;
           }
         }
-      } catch (error) {
-        // console.log('ERROR')
-      }
+      } catch (error) {}
     }
     return categoriesCount;
   }
 
   getArticleByDay(data: DataEntry[]) {
-    
     const dataArray = data.map((data) => ({
       date: data.date,
       categorie: this.getCategorie(data.categories),
@@ -397,7 +395,10 @@ export class DataService {
     }
   }
 
-  getDataByWave(wave: string, articleDataByDay: CategoryFrequencyPerDay[]): CategoryFrequencyPerDay[] {
+  getDataByWave(
+    wave: string,
+    articleDataByDay: CategoryFrequencyPerDay[]
+  ): CategoryFrequencyPerDay[] {
     let data: CategoryFrequencyPerDay[] = [];
     switch (wave) {
       case 'first':

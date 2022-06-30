@@ -1,3 +1,7 @@
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable no-unused-vars */
+import * as d3 from 'd3';
+
 import {
   AfterViewInit,
   Component,
@@ -5,8 +9,8 @@ import {
   Input,
   OnChanges,
 } from '@angular/core';
-import * as d3 from 'd3';
 import { Covid, DataEntry } from 'src/app/interfaces/data-entry.interface';
+
 import { DataService } from 'src/app/services/data.service';
 
 // This visualisation is based on : https://codepen.io/borntofrappe/pen/QXNvjx
@@ -26,7 +30,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
     | d3.Selection<SVGPathElement, unknown, null, undefined>
     | undefined;
   private margin = { top: 40, right: 0, bottom: 0, left: 70 };
-  
+
   private width = 800 - this.margin.left - this.margin.right;
   private height = 700 - this.margin.top - this.margin.bottom;
 
@@ -40,11 +44,8 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
   public yAxis: d3.Selection<SVGGElement, unknown, null, undefined> | undefined;
   articlesDataByDate = {};
   public data: any;
-  constructor(
-    // eslint-disable-next-line no-unused-vars
-    public chartElem: ElementRef,
-    private dataService: DataService
-  ) {}
+
+  constructor(public chartElem: ElementRef, private dataService: DataService) {}
 
   ngAfterViewInit(): void {
     this.data = this.dataService.getNbArticlesByDay(this.articlesData);
@@ -81,7 +82,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
       .append('g')
       .style(
         'transform',
-        'translate(' + this.margin.left + ',' + this.margin.top  + ')'
+        'translate(' + this.margin.left + ',' + this.margin.top + ')'
       );
 
     this.yScale = d3
@@ -175,7 +176,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
     this.addLabels();
   }
 
-  private addTitle(){
+  private addTitle() {
     this.svg!.append('text')
       .attr('x', this.width / 2)
       .attr('y', 15)
@@ -186,23 +187,23 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
         "Nombre d'articles portant sur la COVID/ Nombre de cas de COVID par jour"
       );
   }
-  private addLabels(){
-    this.svgInner!.append("text")
-    .attr("class", "x label")
-    .attr("text-anchor", "end")
-    .attr("x", this.width/2)
-    .attr("y", this.height - this.margin.top)
-    .text("Date");
+  private addLabels() {
+    this.svgInner!.append('text')
+      .attr('class', 'x label')
+      .attr('text-anchor', 'end')
+      .attr('x', this.width / 2)
+      .attr('y', this.height - this.margin.top)
+      .text('Date');
     this.addLegend();
 
-    this.svgInner!.append("text")
-    .attr("class", "y label")
-    .attr("text-anchor", "end")
-    .attr("x", -200)
-    .attr("y", 6)
-    .attr("dy", ".75em")
-    .attr("transform", "rotate(-90)")
-    .text("Nombres d'articles / Nombre de cas");
+    this.svgInner!.append('text')
+      .attr('class', 'y label')
+      .attr('text-anchor', 'end')
+      .attr('x', -200)
+      .attr('y', 6)
+      .attr('dy', '.75em')
+      .attr('transform', 'rotate(-90)')
+      .text("Nombres d'articles / Nombre de cas");
   }
 
   private addLegend() {

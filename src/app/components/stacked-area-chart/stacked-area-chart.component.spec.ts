@@ -8,9 +8,8 @@ describe('StackedAreaChartComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ StackedAreaChartComponent ]
-    })
-    .compileComponents();
+      declarations: [StackedAreaChartComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {

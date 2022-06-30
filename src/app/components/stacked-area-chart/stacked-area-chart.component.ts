@@ -1,12 +1,15 @@
-import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
-import { MatSelectChange } from '@angular/material/select';
+/* eslint-disable no-unused-vars */
 import * as d3 from 'd3';
+
+import { AfterViewInit, Component, ElementRef, Input } from '@angular/core';
 import {
   CategoryFrequencyPerDay,
   Covid,
   DataEntry,
 } from '../../interfaces/data-entry.interface';
+
 import { DataService } from '../../services/data.service';
+import { MatSelectChange } from '@angular/material/select';
 
 @Component({
   selector: 'app-stacked-area-chart',
@@ -211,7 +214,7 @@ export class StackedAreaChartComponent implements AfterViewInit {
     d3.selectAll('.myArea').style('opacity', 0.1);
     d3.select('.' + d).style('opacity', 1);
   }
-  private nonHighlight(_event: any, _d: any) {
+  private nonHighlight() {
     d3.selectAll('.myArea').style('opacity', 1);
   }
 }
