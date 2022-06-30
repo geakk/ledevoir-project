@@ -1,4 +1,21 @@
 #bar-chart {
-    width: auto;
+    overflow: hidden;
+    width: 800px;
     height: 400px;
+    margin-left: auto;
+    margin-right: auto;
 }
+
+// put the mat-form-field tag on the top middle right of the bar-chart
+ mat-form-field {
+    position: relative;
+    top: 0;
+    margin-top: 20px;
+    left: 80%;
+}
+
+h2 {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+}	
