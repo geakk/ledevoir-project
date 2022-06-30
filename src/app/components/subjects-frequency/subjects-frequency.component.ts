@@ -1,7 +1,3 @@
-/* eslint-disable no-prototype-builtins */
-/* eslint-disable no-unused-vars */
-import * as d3 from 'd3';
-
 import {
   AfterViewInit,
   Component,
@@ -9,7 +5,7 @@ import {
   Input,
   OnChanges,
 } from '@angular/core';
-
+import * as d3 from 'd3';
 import { DataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
 
@@ -59,7 +55,11 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   public yAxis: d3.Selection<SVGGElement, unknown, null, undefined> | undefined;
   articlesDataByDate = {};
   public data: any;
-  constructor(public chartElem: ElementRef, private dataService: DataService) {}
+  constructor(
+    // eslint-disable-next-line no-unused-vars
+    public chartElem: ElementRef,
+    private dataService: DataService
+  ) {}
 
   ngAfterViewInit(): void {
     this.data = this.dataService.getCategoryOccurence(this.articlesData);
@@ -68,7 +68,9 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   }
 
   public ngOnChanges(changes: { hasOwnProperty: (args: any) => any }): void {
+    // eslint-disable-next-line no-prototype-builtins
     if (changes.hasOwnProperty('data') && this.data) {
+      // console.log(this.data);
       this.initializeChart();
       this.drawChart();
 
@@ -82,7 +84,9 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
       .select('.subject-frequency')
       .append('svg')
       .attr('width', this.width)
-      .attr('height', this.height);
+      .attr('height', this.height)
+      .style('margin-left', 'auto')
+      .style('margin-right', 'auto');
     this.svgInner = this.svg
       .append('g')
       .style(
@@ -93,7 +97,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.yScale = d3
       .scaleLinear()
       .domain([12000, 0])
-      .range([0, this.height - 2 * this.margin.left]);
+      .range([10, this.height - 2 * this.margin.left]);
 
     this.yAxis = this.svgInner
       .append('g')
@@ -102,7 +106,6 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
 
     this.xScale = d3
       .scaleLinear()
-      // .call(d3.axisBottom(this.xScale).ticks(5))
       .domain([1, 5])
       .range([this.margin.top, this.width - 2 * this.margin.top]);
 
@@ -182,7 +185,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   private drawChart(): void {
     this.svg!.attr('width', this.width);
 
-    const xAxis = d3.axisBottom(this.xScale!);
+    const xAxis = d3.axisBottom(this.xScale!).ticks(5);
 
     this.xAxis!.call(xAxis);
 
@@ -496,13 +499,13 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.svgInner!.append('text')
       .attr('x', 220)
       .attr('y', 30)
-      .text('Arts and entertainment')
+      .text('Arts et divertissement')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
       .attr('x', 220)
       .attr('y', 50)
-      .text('Environment')
+      .text('Environnement')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
@@ -514,7 +517,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.svgInner!.append('text')
       .attr('x', 220)
       .attr('y', 90)
-      .text('Politics')
+      .text('Politique')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
@@ -526,14 +529,30 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.svgInner!.append('text')
       .attr('x', 220)
       .attr('y', 130)
-      .text('Sports')
+      .text('Sport')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
       .attr('x', 220)
       .attr('y', 150)
-      .text('Technology')
+      .text('Technologie')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
+
+    this.svgInner!.append('text')
+      .attr('class', 'x label')
+      .attr('text-anchor', 'end')
+      .attr('x', this.width / 2 + this.margin.bottom)
+      .attr('y', this.height - 70)
+      .text('Vague de contamination');
+
+    this.svgInner!.append('text')
+      .attr('class', 'y label')
+      .attr('text-anchor', 'end')
+      .attr('x', -150)
+      .attr('y', 0)
+      .attr('dy', '.75em')
+      .attr('transform', 'rotate(-90)')
+      .text("Nombres d'articles");
   }
 }
