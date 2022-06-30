@@ -75,7 +75,9 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
       .select('.linechart')
       .append('svg')
       .attr('width', this.width)
-      .attr('height', this.height);
+      .attr('height', this.height)
+      .style('margin-left', 'auto')
+      .style('margin-right','auto');
 
     this.svgInner = this.svg
       .append('g')
@@ -130,7 +132,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
     const xAxis = d3
       .axisBottom(this.xScale!)
       .ticks(10)
-      .tickFormat(d3.timeFormat('%d / %m / %Y'));
+      .tickFormat(d3.timeFormat('%m / %Y'));
 
     this.xAxis!.call(xAxis);
 
