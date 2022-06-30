@@ -1,3 +1,13 @@
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild,
+} from '@angular/core';
+import { MatSelectChange } from '@angular/material/select';
+
 import * as d3 from 'd3';
 
 import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
@@ -10,15 +20,22 @@ import { WordData } from 'src/app/interfaces/data-entry.interface';
   templateUrl: './bar-chart.component.html',
   styleUrls: ['./bar-chart.component.scss'],
 })
-export class BarChartComponent implements AfterViewInit {
+export class BarChartComponent implements AfterViewInit, OnInit {
   constructor() {}
 
-  @ViewChild('barChart')
+  @ViewChild('barChart', { static: true })
   private chartContainer!: ElementRef;
-  selected = 'Vague 1';
   data!: WordData[];
-  margin = { top: 20, right: 20, bottom: 30, left: 80 };
+  selected = '0';
+  margin = { top: 20, right: 20, bottom: 30, left: 120 };
   waves = [
+    [
+      { word: 'Covid', frequency: 48155 },
+      { word: 'Québec', frequency: 13038 },
+      { word: 'Rds', frequency: 11232 },
+      { word: 'Ontario', frequency: 8104 },
+      { word: 'Pandémie', frequency: 7102 },
+    ],
     [
       { word: 'Covid', frequency: 12222 },
       { word: 'Rds', frequency: 3230 },
@@ -57,21 +74,32 @@ export class BarChartComponent implements AfterViewInit {
   ];
 
   ngAfterViewInit(): void {
+    this.createChart();
+  }
+  // make waves[0] as default value of the chart's data when page loads and update the chart
+  updateDataDefault(): void {
     this.data = this.waves[0];
     this.createChart();
   }
+  ngOnInit(): void {
+    this.updateDataDefault();
+  }
 
-  // create function with d3 to create a bar chart
   private createChart(): void {
     const element = this.chartContainer.nativeElement;
     const data = this.data;
+    console.log(this.data)
 
     const svg = d3
       .select(element)
       .append('svg')
       .attr('class', 'barChar')
-      .attr('width', element.offsetWidth)
-      .attr('height', element.offsetHeight);
+      .attr('width', element.offsetWidth + this.margin.left + this.margin.right)
+      .attr(
+        'height',
+        element.offsetHeight + this.margin.top + this.margin.bottom
+      );
+
     const contentHeight =
       element.offsetHeight - this.margin.top - this.margin.bottom;
 
@@ -116,6 +144,39 @@ export class BarChartComponent implements AfterViewInit {
       .attr('width', x.bandwidth())
       .attr('fill', '#69b3a2')
       .attr('height', (d) => contentHeight - y(d.frequency));
+
+    // add title to x axis and y axis to the svg element and set the font size to 15px and set the font family to times and give enough space for the title to be displayed and the axis to be displayed properly and take into account the margin and fequency number size on the waves array
+
+    svg
+      .append('text')
+      .attr('x', (element.offsetWidth / 2) - this.margin.left)
+      .attr('y', -this.margin.top)
+      .attr('text-anchor', 'middle')
+      .style('font', '15px times')
+      .text('Mots');
+
+    svg
+      .append('text')
+      .attr('x', -(element.offsetHeight / 2))
+      .attr('y', 40)
+      .attr('transform', 'rotate(-90)')
+      .attr('text-anchor', 'middle')
+      .style('font', '15px times')
+      .text("Fréquence d'apparition");
+
+
+
+    // add title to the chart
+    svg
+      .append('text')
+      .attr('class', 'chart-title')
+      .attr('x', 500 / 2)
+      .attr('y', -40)
+      .attr('font-size', '20px')
+      .attr('font-family', 'times')
+      .attr('color', '#69b3a2')
+      .attr('text-anchor', 'middle')
+      .text('Covid-19 Word Frequency');
   }
 
   updateData(event: MatSelectChange): void {
