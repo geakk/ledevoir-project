@@ -499,7 +499,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.svgInner!.append('text')
       .attr('x', 220)
       .attr('y', 30)
-      .text('Arts et divertissement')
+      .text('Art et divertissement')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
@@ -511,7 +511,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.svgInner!.append('text')
       .attr('x', 220)
       .attr('y', 70)
-      .text('Health')
+      .text('Santé')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
