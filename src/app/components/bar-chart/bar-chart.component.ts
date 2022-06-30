@@ -1,5 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { MatSelectChange } from '@angular/material/select';
+// eslint-disable-next-line sort-imports
 import * as d3 from 'd3';
 import { WordData } from 'src/app/interfaces/data-entry.interface';
 
@@ -69,7 +70,6 @@ export class BarChartComponent implements OnInit {
   private createChart(): void {
     const element = this.chartContainer.nativeElement;
     const data = this.data;
-    console.log(this.data);
 
     const svg = d3
       .select(element)

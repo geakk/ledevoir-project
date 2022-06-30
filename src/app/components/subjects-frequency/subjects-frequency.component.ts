@@ -5,6 +5,7 @@ import {
   Input,
   OnChanges,
 } from '@angular/core';
+// eslint-disable-next-line sort-imports
 import * as d3 from 'd3';
 import { DataEntry } from 'src/app/interfaces/data-entry.interface';
 import { DataService } from 'src/app/services/data.service';
@@ -58,6 +59,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
   constructor(
     // eslint-disable-next-line no-unused-vars
     public chartElem: ElementRef,
+    // eslint-disable-next-line no-unused-vars
     private dataService: DataService
   ) {}
 
@@ -67,10 +69,10 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.drawChart();
   }
 
+  // eslint-disable-next-line no-unused-vars
   public ngOnChanges(changes: { hasOwnProperty: (args: any) => any }): void {
     // eslint-disable-next-line no-prototype-builtins
     if (changes.hasOwnProperty('data') && this.data) {
-      // console.log(this.data);
       this.initializeChart();
       this.drawChart();
 
