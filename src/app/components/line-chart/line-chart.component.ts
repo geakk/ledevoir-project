@@ -78,7 +78,7 @@ export class LineChartComponent implements OnChanges, AfterViewInit {
       .attr('width', this.width)
       .attr('height', this.height)
       .style('margin-left', 'auto')
-      .style('margin-right','auto');
+      .style('margin-right', 'auto');
 
     this.svgInner = this.svg
       .append('g')
