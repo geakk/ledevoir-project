@@ -1,6 +1,7 @@
+<h2>Histogramme qui montre la fréquence des 5 mots les plus répétés dans les articles de chaque vague</h2>
 <mat-form-field appearance="outline">
     <mat-label>Choisissez la vague</mat-label>
-    <mat-select [(value)]="selected"  (selectionChange)="updateData($event)">
+    <mat-select  [(value)]="selected"  (selectionChange)="updateData($event)">
       <!-- make value="0" as the selected option -->
       <mat-option value="0" selected>Toutes les vagues</mat-option>
       <mat-option value="1">Vague 1</mat-option>
