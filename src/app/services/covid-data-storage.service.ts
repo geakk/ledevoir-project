@@ -1,17 +1,16 @@
-import { Injectable } from '@angular/core';
 import { Covid } from '../interfaces/data-entry.interface';
+import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CovidDataStorageService {
-
-  static covidDataStorageKey = 'covidDataKey'
+  static covidDataStorageKey = 'covidDataKey';
 
   storeData(covidData: Covid[]) {
     try {
-      window.localStorage[CovidDataStorageService.covidDataStorageKey] = JSON.stringify(covidData);
-
+      window.localStorage[CovidDataStorageService.covidDataStorageKey] =
+        JSON.stringify(covidData);
     } catch {
       console.error('Unable to set theme in local storage');
     }
@@ -19,7 +18,9 @@ export class CovidDataStorageService {
 
   getCovidStoredData(): string | null {
     try {
-      return window.localStorage[CovidDataStorageService.covidDataStorageKey] || null;
+      return (
+        window.localStorage[CovidDataStorageService.covidDataStorageKey] || null
+      );
     } catch {
       return null;
     }
@@ -27,8 +28,9 @@ export class CovidDataStorageService {
 
   clearStorage() {
     try {
-      window.localStorage.removeItem(CovidDataStorageService.covidDataStorageKey);
-
+      window.localStorage.removeItem(
+        CovidDataStorageService.covidDataStorageKey
+      );
     } catch {
       console.error('Unable to remove theme from local storage');
     }
