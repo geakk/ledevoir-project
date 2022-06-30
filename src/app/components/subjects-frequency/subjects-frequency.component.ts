@@ -41,7 +41,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     | d3.Selection<SVGPathElement, unknown, null, undefined>
     | undefined;
 
-  private margin = { top: 50, right: 230, bottom: 50, left: 50 };
+  private margin = { top: 50, right: 0, bottom: 0, left: 50 };
   private width = 800 - this.margin.left - this.margin.right;
   private height = 700 - this.margin.top - this.margin.bottom;
 
@@ -441,8 +441,8 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.technology!.attr('d', line(technologyPoints));
 
     this.svgInner!.append('text')
-      .attr('x', this.width / 4)
-      .attr('y', 0 - this.margin.top / 2)
+      .attr('x', this.width / 2)
+      .attr('y', this.height - this.margin.top)
       .attr('text-anchor', 'middle')
       .style('font-size', '16px')
       .style('text-decoration', 'underline')
@@ -451,89 +451,89 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
       );
 
     this.svgInner!.append('circle')
-      .attr('cx', 200)
+      .attr('cx', 300)
       .attr('cy', 10)
       .attr('r', 6)
       .style('fill', 'red');
     this.svgInner!.append('circle')
-      .attr('cx', 200)
+      .attr('cx', 300)
       .attr('cy', 30)
       .attr('r', 6)
       .style('fill', 'blue');
     this.svgInner!.append('circle')
-      .attr('cx', 200)
+      .attr('cx', 300)
       .attr('cy', 50)
       .attr('r', 6)
       .style('fill', 'black');
     this.svgInner!.append('circle')
-      .attr('cx', 200)
+      .attr('cx', 300)
       .attr('cy', 70)
       .attr('r', 6)
       .style('fill', 'green');
     this.svgInner!.append('circle')
-      .attr('cx', 200)
+      .attr('cx', 300)
       .attr('cy', 90)
       .attr('r', 6)
       .style('fill', 'yellow');
     this.svgInner!.append('circle')
-      .attr('cx', 200)
+      .attr('cx', 300)
       .attr('cy', 110)
       .attr('r', 6)
       .style('fill', 'orange');
     this.svgInner!.append('circle')
-      .attr('cx', 200)
+      .attr('cx', 300)
       .attr('cy', 130)
       .attr('r', 6)
       .style('fill', 'gray');
     this.svgInner!.append('circle')
-      .attr('cx', 200)
+      .attr('cx', 300)
       .attr('cy', 150)
       .attr('r', 6)
       .style('fill', 'brown');
     this.svgInner!.append('text')
-      .attr('x', 220)
+      .attr('x', 320)
       .attr('y', 10)
       .text('Business')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
-      .attr('x', 220)
+      .attr('x', 320)
       .attr('y', 30)
       .text('Art et divertissement')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
-      .attr('x', 220)
+      .attr('x', 320)
       .attr('y', 50)
       .text('Environnement')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
-      .attr('x', 220)
+      .attr('x', 320)
       .attr('y', 70)
       .text('Santé')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
-      .attr('x', 220)
+      .attr('x', 320)
       .attr('y', 90)
       .text('Politique')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
-      .attr('x', 220)
+      .attr('x', 320)
       .attr('y', 110)
       .text('Science')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
-      .attr('x', 220)
+      .attr('x', 320)
       .attr('y', 130)
       .text('Sport')
       .style('font-size', '15px')
       .attr('alignment-baseline', 'middle');
     this.svgInner!.append('text')
-      .attr('x', 220)
+      .attr('x', 320)
       .attr('y', 150)
       .text('Technologie')
       .style('font-size', '15px')
@@ -542,7 +542,7 @@ export class SubjectsFrequencyComponent implements OnChanges, AfterViewInit {
     this.svgInner!.append('text')
       .attr('class', 'x label')
       .attr('text-anchor', 'end')
-      .attr('x', this.width / 2 + this.margin.bottom)
+      .attr('x', this.width / 2 + this.margin.bottom + 50)
       .attr('y', this.height - 70)
       .text('Vague de contamination');
 
