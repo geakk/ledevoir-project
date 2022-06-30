@@ -8,9 +8,8 @@ describe('SubjectsFrequencyComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SubjectsFrequencyComponent ]
-    })
-    .compileComponents();
+      declarations: [SubjectsFrequencyComponent],
+    }).compileComponents();
   });
 
   beforeEach(() => {
